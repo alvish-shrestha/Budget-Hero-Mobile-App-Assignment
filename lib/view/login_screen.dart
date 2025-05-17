@@ -1,3 +1,4 @@
+import 'package:budgethero/common/snackbar.dart';
 import 'package:budgethero/view/dashboard_screen.dart';
 import 'package:budgethero/view/signup_screen.dart';
 import 'package:flutter/material.dart';
@@ -173,6 +174,11 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           if (email == "abc@gmail.com" &&
                               password == "abc1234") {
+                            showMySnackbar(
+                              context: context,
+                              content: "Logged in Successfully",
+                              color: Color(0xFFF55345),
+                            );
                             Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(

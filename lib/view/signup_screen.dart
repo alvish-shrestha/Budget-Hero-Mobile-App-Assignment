@@ -1,3 +1,4 @@
+import 'package:budgethero/common/snackbar.dart';
 import 'package:flutter/material.dart';
 import 'package:budgethero/view/login_screen.dart';
 
@@ -253,11 +254,10 @@ class _SignupState extends State<Signup> {
                     child: ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text('Account created successfully!'),
-                              backgroundColor: Color(0xFFF55345),
-                            ),
+                          showMySnackbar(
+                            context: context,
+                            content: "Account created Successfully",
+                            color: Color(0xFFF55345),
                           );
                           Future.delayed(const Duration(seconds: 1), () {
                             Navigator.pushReplacement(
