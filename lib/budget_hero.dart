@@ -1,4 +1,4 @@
-import 'package:budgethero/view/login_view.dart';
+import 'package:budgethero/view/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 class BudgetHero extends StatelessWidget {
@@ -6,6 +6,8 @@ class BudgetHero extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: LoginView(), debugShowCheckedModeBanner: false);
+    return MaterialApp(home: SplashScreen(), 
+    debugShowCheckedModeBanner: false,
+  );
   }
 }
