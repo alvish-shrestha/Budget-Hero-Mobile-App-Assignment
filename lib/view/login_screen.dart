@@ -1,3 +1,4 @@
+import 'package:budgethero/view/dashboard_screen.dart';
 import 'package:budgethero/view/signup_screen.dart';
 import 'package:flutter/material.dart';
 
@@ -24,6 +25,8 @@ class _LoginScreenState extends State<LoginScreen> {
     var headingFont = isLandscape ? 50.0 : 40.0;
     var subheadingFont = isLandscape ? 22.0 : 18.0;
     var paddingTop = isLandscape ? 60.0 : 150.0;
+
+    const double buttonSize = 50;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF55345),
@@ -165,12 +168,25 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: ElevatedButton(
                       onPressed: () {
                         if (myKey.currentState!.validate()) {
-                          ScaffoldMessenger.of(context).showSnackBar(
-                            const SnackBar(
-                              content: Text("Logged in successfully!"),
-                              backgroundColor: Color(0xFFF55345),
-                            ),
-                          );
+                          final email = emailController.text.trim();
+                          final password = passwordController.text.trim();
+
+                          if (email == "abc@gmail.com" &&
+                              password == "abc1234") {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => const DashboardScreen(),
+                              ),
+                            );
+                          } else {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              const SnackBar(
+                                content: Text("Invalid email or password"),
+                                backgroundColor: Colors.red,
+                              ),
+                            );
+                          }
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -192,6 +208,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
+
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -214,65 +231,57 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
+
                   const SizedBox(height: 20),
-                  SizedBox(
-                    width: inputWidth,
-                    height: 50,
-                    child: ElevatedButton.icon(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
+
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      SizedBox(
+                        width: buttonSize,
+                        height: buttonSize,
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            padding: EdgeInsets.zero,
+                          ),
+                          child: Image.asset(
+                            'assets/images/google.png',
+                            height: 28,
+                          ),
                         ),
                       ),
-                      icon: Image.asset('assets/images/google.png', height: 28),
-                      label: Text(
-                        "Sign in with Google",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontFamily: "Jaro",
-                          fontSize: 18,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  SizedBox(
-                    width: inputWidth,
-                    height: 50,
-                    child: ElevatedButton.icon(
-                      onPressed: () {},
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: Colors.white,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(25),
+                      const SizedBox(width: 20),
+                      SizedBox(
+                        width: buttonSize,
+                        height: buttonSize,
+                        child: ElevatedButton(
+                          onPressed: () {},
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor: Colors.white,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(25),
+                            ),
+                            padding: EdgeInsets.zero,
+                          ),
+                          child: Image.asset(
+                            'assets/images/facebook.png',
+                            height: 28,
+                          ),
                         ),
                       ),
-                      icon: Image.asset(
-                        'assets/images/facebook.png',
-                        height: 28,
-                      ),
-                      label: Text(
-                        "Sign in with Facebook",
-                        style: TextStyle(
-                          color: Colors.black,
-                          fontFamily: "Jaro",
-                          fontSize: 18,
-                        ),
-                        overflow: TextOverflow.ellipsis,
-                      ),
-                    ),
+                    ],
                   ),
                   const SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(
-                          builder: (context) => const Signup(),
-                        ),
+                        MaterialPageRoute(builder: (context) => const Signup()),
                       );
                     },
                     child: RichText(
