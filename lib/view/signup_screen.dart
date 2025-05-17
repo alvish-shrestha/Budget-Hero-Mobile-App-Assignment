@@ -364,7 +364,7 @@ class _SignupState extends State<Signup> {
                           color: Colors.white,
                         ),
                         children: const [
-                          TextSpan(text: "Already have an account? "),
+                          TextSpan(text: "Already have an account?  "),
                           TextSpan(
                             text: "Sign in",
                             style: TextStyle(color: Color(0xFF000CF9)),

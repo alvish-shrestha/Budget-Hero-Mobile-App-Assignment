@@ -173,11 +173,12 @@ class _LoginScreenState extends State<LoginScreen> {
 
                           if (email == "abc@gmail.com" &&
                               password == "abc1234") {
-                            Navigator.pushReplacement(
+                            Navigator.pushAndRemoveUntil(
                               context,
                               MaterialPageRoute(
                                 builder: (context) => const DashboardScreen(),
                               ),
+                              (Route<dynamic> route) => false,
                             );
                           } else {
                             ScaffoldMessenger.of(context).showSnackBar(
@@ -208,7 +209,6 @@ class _LoginScreenState extends State<LoginScreen> {
                     ),
                   ),
                   const SizedBox(height: 20),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -231,9 +231,7 @@ class _LoginScreenState extends State<LoginScreen> {
                       ),
                     ],
                   ),
-
                   const SizedBox(height: 20),
-
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
@@ -292,7 +290,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           color: Colors.white,
                         ),
                         children: const [
-                          TextSpan(text: "Don't have an account? "),
+                          TextSpan(text: "Don't have an account?  "),
                           TextSpan(
                             text: "Sign up",
                             style: TextStyle(color: Color(0xFF000CF9)),
