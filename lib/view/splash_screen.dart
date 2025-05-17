@@ -1,4 +1,4 @@
-import 'package:budgethero/view/login.dart';
+import 'package:budgethero/view/login_screen.dart';
 import 'package:flutter/material.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -25,9 +25,8 @@ class _SplashScreenState extends State<SplashScreen> {
 
     Future.delayed(Duration(seconds: 3), () {
       Navigator.pushReplacement(
-        // ignore: use_build_context_synchronously
         context,
-        MaterialPageRoute(builder: (_) => Login()),
+        MaterialPageRoute(builder: (_) => LoginScreen()),
       );
     });
   }
