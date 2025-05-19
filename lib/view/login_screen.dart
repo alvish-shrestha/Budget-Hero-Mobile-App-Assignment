@@ -172,8 +172,8 @@ class _LoginScreenState extends State<LoginScreen> {
                           final email = emailController.text.trim();
                           final password = passwordController.text.trim();
 
-                          if (email == "abc@gmail.com" &&
-                              password == "abc1234") {
+                          if (email == "admin@gmail.com" &&
+                              password == "admin123") {
                             showMySnackbar(
                               context: context,
                               content: "Logged in Successfully",
