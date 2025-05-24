@@ -37,8 +37,6 @@ class _SignupState extends State<Signup> {
     var subheadingFont = isLandscape ? 22.0 : 18.0;
     var paddingTop = isLandscape ? 60.0 : 150.0;
 
-    const double buttonSize = 50;
-
     return Scaffold(
       backgroundColor: const Color(0xFFF55345),
       body: Align(
@@ -284,72 +282,6 @@ class _SignupState extends State<Signup> {
                         ),
                       ),
                     ),
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Expanded(
-                        child: Divider(color: Colors.white, thickness: 1),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Text(
-                          "or sign up with",
-                          style: TextStyle(
-                            fontFamily: "Jaro",
-                            fontSize: 14,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      const Expanded(
-                        child: Divider(color: Colors.white, thickness: 1),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      SizedBox(
-                        width: buttonSize,
-                        height: buttonSize,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            padding: EdgeInsets.zero,
-                          ),
-                          child: Image.asset(
-                            'assets/images/google.png',
-                            height: 28,
-                          ),
-                        ),
-                      ),
-                      const SizedBox(width: 20),
-                      SizedBox(
-                        width: buttonSize,
-                        height: buttonSize,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            padding: EdgeInsets.zero,
-                          ),
-                          child: Image.asset(
-                            'assets/images/facebook.png',
-                            height: 28,
-                          ),
-                        ),
-                      ),
-                    ],
                   ),
                   const SizedBox(height: 20),
                   GestureDetector(
