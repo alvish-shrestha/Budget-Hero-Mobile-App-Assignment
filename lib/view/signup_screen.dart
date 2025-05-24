@@ -284,6 +284,29 @@ class _SignupState extends State<Signup> {
                     ),
                   ),
                   const SizedBox(height: 20),
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Expanded(
+                        child: Divider(color: Colors.white, thickness: 1),
+                      ),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 10),
+                        child: Text(
+                          "x x x",
+                          style: TextStyle(
+                            fontFamily: "Jaro",
+                            fontSize: 14,
+                            color: Colors.white,
+                          ),
+                        ),
+                      ),
+                      const Expanded(
+                        child: Divider(color: Colors.white, thickness: 1),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {
                       Navigator.pop(context);
