@@ -11,10 +11,30 @@ class _DashboardScreenState extends State<DashboardScreen> {
   int _selectedIndex = 0;
 
   static const List<Widget> _widgetOptions = <Widget>[
-    Center(child: Text('Transactions', style: TextStyle(fontSize: 24))),
-    Center(child: Text('Statistics', style: TextStyle(fontSize: 24))),
-    Center(child: Text('Accounts', style: TextStyle(fontSize: 24))),
-    Center(child: Text('More Options', style: TextStyle(fontSize: 24))),
+    Center(
+      child: Text(
+        'Transactions',
+        style: TextStyle(fontSize: 24, fontFamily: 'Jaro'),
+      ),
+    ),
+    Center(
+      child: Text(
+        'Statistics',
+        style: TextStyle(fontSize: 24, fontFamily: 'Jaro'),
+      ),
+    ),
+    Center(
+      child: Text(
+        'Accounts',
+        style: TextStyle(fontSize: 24, fontFamily: 'Jaro'),
+      ),
+    ),
+    Center(
+      child: Text(
+        'More Options',
+        style: TextStyle(fontSize: 24, fontFamily: 'Jaro'),
+      ),
+    ),
   ];
 
   void _onItemTapped(int index) {
