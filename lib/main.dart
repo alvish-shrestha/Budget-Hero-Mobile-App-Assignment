@@ -1,5 +1,5 @@
-import 'package:budgethero/theme/theme_data.dart';
-import 'package:budgethero/view/splash_screen.dart';
+import 'package:budgethero/app/theme/theme_data.dart';
+import 'package:budgethero/features/splash_screen/presentation/view/splash_screen.dart';
 import 'package:flutter/material.dart';
 
 void main() {
