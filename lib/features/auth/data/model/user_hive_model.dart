@@ -2,6 +2,7 @@ import 'package:budgethero/app/constant/hive/hive_table_constant.dart';
 import 'package:budgethero/features/auth/domain/entity/user_entity.dart';
 import 'package:equatable/equatable.dart';
 import 'package:hive_flutter/hive_flutter.dart';
+import 'package:uuid/uuid.dart';
 
 part 'user_hive_model.g.dart';
 
@@ -18,13 +19,13 @@ class UserHiveModel extends Equatable {
   @HiveField(4)
   final String confirmPassword;
 
-  const UserHiveModel({
-    this.userId,
+  UserHiveModel({
+    String? userId,
     required this.username,
     required this.email,
     required this.password,
     required this.confirmPassword,
-  });
+  }) : userId = userId ?? Uuid().v4();
 
   const UserHiveModel.initial()
     : userId = null,
