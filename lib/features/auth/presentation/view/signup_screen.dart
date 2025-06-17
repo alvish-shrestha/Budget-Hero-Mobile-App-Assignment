@@ -1,6 +1,7 @@
-import 'package:budgethero/core/common/snackbar/snackbar.dart';
+import 'package:budgethero/features/auth/presentation/view_model/register_view_model/register_user_event.dart';
+import 'package:budgethero/features/auth/presentation/view_model/register_view_model/register_view_model.dart';
 import 'package:flutter/material.dart';
-import 'package:budgethero/features/auth/presentation/view/login_screen.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class Signup extends StatefulWidget {
   const Signup({super.key});
@@ -252,20 +253,15 @@ class _SignupState extends State<Signup> {
                     child: ElevatedButton(
                       onPressed: () {
                         if (_formKey.currentState!.validate()) {
-                          showMySnackbar(
-                            context: context,
-                            content: "Account created Successfully",
-                            color: Color(0xFFF55345),
+                          context.read<RegisterViewModel>().add(
+                            RegisterUserEvent(
+                              context: context,
+                              username: _usernameController.text,
+                              email: _emailController.text,
+                              password: _passwordController.text,
+                              confirmPassword: _confirmPasswordController.text,
+                            ),
                           );
-                          Future.delayed(const Duration(seconds: 1), () {
-                            Navigator.pushReplacement(
-                              // ignore: use_build_context_synchronously
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const LoginScreen(),
-                              ),
-                            );
-                          });
                         }
                       },
                       style: ElevatedButton.styleFrom(

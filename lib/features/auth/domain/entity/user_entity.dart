@@ -7,7 +7,20 @@ class UserEntity extends Equatable {
   final String password;
   final String confirmPassword;
 
+  const UserEntity({
+    this.userId,
+    required this.username,
+    required this.email,
+    required this.password,
+    required this.confirmPassword,
+  });
+
   @override
-  // TODO: implement props
-  List<Object?> get props => throw UnimplementedError();
+  List<Object?> get props => [
+    userId,
+    username,
+    email,
+    password,
+    confirmPassword,
+  ];
 }

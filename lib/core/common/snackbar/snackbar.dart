@@ -9,7 +9,11 @@ showMySnackbar({
     SnackBar(
       content: Text(
         content,
-        style: TextStyle(color: Colors.black, fontWeight: FontWeight.bold),
+        style: TextStyle(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+          fontFamily: "Jaro",
+        ),
       ),
       backgroundColor: color ?? Colors.green,
       duration: Duration(seconds: 2),
