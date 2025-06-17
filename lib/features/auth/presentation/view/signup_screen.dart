@@ -13,8 +13,6 @@ class _SignupState extends State<Signup> {
   final _formKey = GlobalKey<FormState>();
   final _usernameController = TextEditingController();
   final _emailController = TextEditingController();
-  final _firstnameController = TextEditingController();
-  final _lastnameController = TextEditingController();
   final _passwordController = TextEditingController();
   final _confirmPasswordController = TextEditingController();
 
@@ -137,76 +135,6 @@ class _SignupState extends State<Signup> {
                         }
                         if (!RegExp(r'\S+@\S+\.\S+').hasMatch(value)) {
                           return 'Please enter a valid email';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  SizedBox(
-                    width: inputWidth,
-                    child: TextFormField(
-                      controller: _firstnameController,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        labelText: "First Name",
-                        labelStyle: const TextStyle(
-                          fontFamily: "Jaro",
-                          color: Colors.white,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                            color: Colors.white,
-                            width: 3,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                            color: Colors.white,
-                            width: 3,
-                          ),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter first name';
-                        }
-                        return null;
-                      },
-                    ),
-                  ),
-                  const SizedBox(height: 15),
-                  SizedBox(
-                    width: inputWidth,
-                    child: TextFormField(
-                      controller: _lastnameController,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        labelText: "Last Name",
-                        labelStyle: const TextStyle(
-                          fontFamily: "Jaro",
-                          color: Colors.white,
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                            color: Colors.white,
-                            width: 3,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                            color: Colors.white,
-                            width: 3,
-                          ),
-                        ),
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter last name';
                         }
                         return null;
                       },
