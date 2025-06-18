@@ -7,8 +7,9 @@ class BudgetHero extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      home: SplashScreen(), 
-      debugShowCheckedModeBanner: false
+      title: "Budget Hero",
+      debugShowCheckedModeBanner: false,
+      home: SplashScreen(),
     );
   }
 }

@@ -18,10 +18,11 @@ class UserLocalDatasource implements IUserDataSource {
   Future<String> loginUser(String email, String password) async {
     try {
       final user = await _hiveService.loginUser(email, password);
-      if (user == null) {
+      if (user != null && user.password == password) {
+        return "Login successful";
+      } else {
         throw Exception('Invalid email or password');
       }
-      return user.userId ?? '';
     } catch (e) {
       // Handle exceptions and return a failure
       throw Exception('Login failed: $e');

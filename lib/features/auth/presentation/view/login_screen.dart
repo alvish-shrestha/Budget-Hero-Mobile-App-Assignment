@@ -1,22 +1,18 @@
-import 'package:budgethero/core/common/snackbar/snackbar.dart';
+import 'package:budgethero/app/service_locator/service_locator.dart';
 import 'package:budgethero/features/auth/presentation/view/signup_screen.dart';
-import 'package:budgethero/features/home/presentation/view/dashboard_screen.dart';
+import 'package:budgethero/features/auth/presentation/view_model/login_view_model/login_event.dart';
+import 'package:budgethero/features/auth/presentation/view_model/login_view_model/login_view_model.dart';
+import 'package:budgethero/features/auth/presentation/view_model/register_view_model/register_view_model.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-class LoginScreen extends StatefulWidget {
-  const LoginScreen({super.key});
+class LoginScreen extends StatelessWidget {
+  LoginScreen({super.key});
 
-  @override
-  State<LoginScreen> createState() => _LoginScreenState();
-}
-
-class _LoginScreenState extends State<LoginScreen> {
   final emailController = TextEditingController();
   final passwordController = TextEditingController();
-
-  final myKey = GlobalKey<FormState>();
-
-  bool _obscurePassword = true;
+  final _formKey = GlobalKey<FormState>();
+  final ValueNotifier<bool> obscurePassword = ValueNotifier<bool>(true);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +22,6 @@ class _LoginScreenState extends State<LoginScreen> {
     var headingFont = isLandscape ? 50.0 : 40.0;
     var subheadingFont = isLandscape ? 22.0 : 18.0;
     var paddingTop = isLandscape ? 60.0 : 150.0;
-
     const double buttonSize = 50;
 
     return Scaffold(
@@ -37,7 +32,7 @@ class _LoginScreenState extends State<LoginScreen> {
           constraints: const BoxConstraints(maxWidth: 500),
           child: SingleChildScrollView(
             child: Form(
-              key: myKey,
+              key: _formKey,
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -102,49 +97,52 @@ class _LoginScreenState extends State<LoginScreen> {
                   const SizedBox(height: 15),
                   SizedBox(
                     width: inputWidth,
-                    child: TextFormField(
-                      obscureText: _obscurePassword,
-                      style: const TextStyle(color: Colors.white),
-                      decoration: InputDecoration(
-                        labelText: "Password",
-                        labelStyle: const TextStyle(
-                          fontFamily: "Jaro",
-                          color: Colors.white,
-                        ),
-                        suffixIcon: IconButton(
-                          icon: Icon(
-                            _obscurePassword
-                                ? Icons.visibility_off
-                                : Icons.visibility,
-                            color: Colors.white,
+                    child: ValueListenableBuilder<bool>(
+                      valueListenable: obscurePassword,
+                      builder: (context, isObscure, child) {
+                        return TextFormField(
+                          obscureText: isObscure,
+                          style: const TextStyle(color: Colors.white),
+                          decoration: InputDecoration(
+                            labelText: "Password",
+                            labelStyle: const TextStyle(
+                              fontFamily: "Jaro",
+                              color: Colors.white,
+                            ),
+                            suffixIcon: IconButton(
+                              icon: Icon(
+                                isObscure
+                                    ? Icons.visibility_off
+                                    : Icons.visibility,
+                                color: Colors.white,
+                              ),
+                              onPressed: () {
+                                obscurePassword.value = !isObscure;
+                              },
+                            ),
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(7),
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                                width: 3,
+                              ),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(7),
+                              borderSide: const BorderSide(
+                                color: Colors.white,
+                                width: 3,
+                              ),
+                            ),
                           ),
-                          onPressed: () {
-                            setState(() {
-                              _obscurePassword = !_obscurePassword;
-                            });
+                          controller: passwordController,
+                          validator: (value) {
+                            if (value == null || value.isEmpty) {
+                              return "Please enter password";
+                            }
+                            return null;
                           },
-                        ),
-                        enabledBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                            color: Colors.white,
-                            width: 3,
-                          ),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(7),
-                          borderSide: const BorderSide(
-                            color: Colors.white,
-                            width: 3,
-                          ),
-                        ),
-                      ),
-                      controller: passwordController,
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return "Please enter password";
-                        }
-                        return null;
+                        );
                       },
                     ),
                   ),
@@ -168,32 +166,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     height: 50,
                     child: ElevatedButton(
                       onPressed: () {
-                        if (myKey.currentState!.validate()) {
-                          final email = emailController.text.trim();
-                          final password = passwordController.text.trim();
-
-                          if (email == "admin@gmail.com" &&
-                              password == "admin123") {
-                            showMySnackbar(
+                        if (_formKey.currentState!.validate()) {
+                          context.read<LoginViewModel>().add(
+                            LoginWithEmailAndPasswordEvent(
                               context: context,
-                              content: "Logged in Successfully",
-                              color: Color(0xFFF55345),
-                            );
-                            Navigator.pushAndRemoveUntil(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const DashboardScreen(),
-                              ),
-                              (Route<dynamic> route) => false,
-                            );
-                          } else {
-                            ScaffoldMessenger.of(context).showSnackBar(
-                              const SnackBar(
-                                content: Text("Invalid email or password"),
-                                backgroundColor: Colors.red,
-                              ),
-                            );
-                          }
+                              email: emailController.text,
+                              password: passwordController.text,
+                            ),
+                          );
                         }
                       },
                       style: ElevatedButton.styleFrom(
@@ -202,7 +182,7 @@ class _LoginScreenState extends State<LoginScreen> {
                           borderRadius: BorderRadius.circular(7),
                         ),
                       ),
-                      child: Center(
+                      child: const Center(
                         child: Text(
                           "SIGN IN",
                           style: TextStyle(
@@ -241,43 +221,9 @@ class _LoginScreenState extends State<LoginScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.center,
                     children: [
-                      SizedBox(
-                        width: buttonSize,
-                        height: buttonSize,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            padding: EdgeInsets.zero,
-                          ),
-                          child: Image.asset(
-                            'assets/images/google.png',
-                            height: 28,
-                          ),
-                        ),
-                      ),
+                      _socialButton('assets/images/google.png', buttonSize),
                       const SizedBox(width: 20),
-                      SizedBox(
-                        width: buttonSize,
-                        height: buttonSize,
-                        child: ElevatedButton(
-                          onPressed: () {},
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(25),
-                            ),
-                            padding: EdgeInsets.zero,
-                          ),
-                          child: Image.asset(
-                            'assets/images/facebook.png',
-                            height: 28,
-                          ),
-                        ),
-                      ),
+                      _socialButton('assets/images/facebook.png', buttonSize),
                     ],
                   ),
                   const SizedBox(height: 20),
@@ -285,17 +231,24 @@ class _LoginScreenState extends State<LoginScreen> {
                     onTap: () {
                       Navigator.push(
                         context,
-                        MaterialPageRoute(builder: (context) => const Signup()),
+                        MaterialPageRoute(
+                          builder:
+                              (context) => BlocProvider<RegisterViewModel>(
+                                create:
+                                    (_) => serviceLocator<RegisterViewModel>(),
+                                child: Builder(builder: (context) => Signup()),
+                              ),
+                        ),
                       );
                     },
                     child: RichText(
-                      text: TextSpan(
+                      text: const TextSpan(
                         style: TextStyle(
                           fontFamily: "Jaro",
                           fontSize: 14,
                           color: Colors.white,
                         ),
-                        children: const [
+                        children: [
                           TextSpan(text: "Don't have an account?  "),
                           TextSpan(
                             text: "Sign up",
@@ -311,6 +264,24 @@ class _LoginScreenState extends State<LoginScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _socialButton(String assetPath, double size) {
+    return SizedBox(
+      width: size,
+      height: size,
+      child: ElevatedButton(
+        onPressed: () {},
+        style: ElevatedButton.styleFrom(
+          backgroundColor: Colors.white,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(25),
+          ),
+          padding: EdgeInsets.zero,
+        ),
+        child: Image.asset(assetPath, height: 28),
       ),
     );
   }

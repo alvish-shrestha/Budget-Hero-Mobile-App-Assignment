@@ -20,8 +20,7 @@ class HiveService {
     var box = await Hive.openBox<UserHiveModel>(HiveTableConstant.userBox);
     await box.put(user.userId, user);
   }
-
-  // ===================== Login Query =====================
+  
   Future<UserHiveModel?> loginUser(String email, String password) async {
     var box = await Hive.openBox<UserHiveModel>(HiveTableConstant.userBox);
 

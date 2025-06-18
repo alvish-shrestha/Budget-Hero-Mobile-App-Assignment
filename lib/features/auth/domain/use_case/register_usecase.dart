@@ -31,6 +31,7 @@ class RegisterUsecaseParams extends Equatable {
 class UserRegisterUsecase
     implements UseCaseWithParams<void, RegisterUsecaseParams> {
   final IUserRepository _userRepository;
+
   UserRegisterUsecase({required IUserRepository userRepository})
     : _userRepository = userRepository;
 

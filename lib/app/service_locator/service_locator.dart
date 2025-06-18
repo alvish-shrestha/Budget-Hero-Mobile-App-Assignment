@@ -22,32 +22,39 @@ Future _initHiveService() async {
 
 Future _initAuthModule() async {
   // Data Source
-  serviceLocator.registerFactory(() => UserLocalDatasource(
-      hiveService: serviceLocator<HiveService>(),
-  ));
+  serviceLocator.registerFactory(
+    () => UserLocalDatasource(hiveService: serviceLocator<HiveService>()),
+  );
 
   // Repository
-  serviceLocator.registerFactory(() => UserLocalRepository(
+  serviceLocator.registerFactory(
+    () => UserLocalRepository(
       userLocalDatasource: serviceLocator<UserLocalDatasource>(),
-  ));
+    ),
+  );
 
   // Use Cases
-  serviceLocator.registerFactory(() => UserRegisterUsecase(
+  serviceLocator.registerFactory(
+    () => UserRegisterUsecase(
       userRepository: serviceLocator<UserLocalRepository>(),
-  ));
+    ),
+  );
 
-  serviceLocator.registerFactory(() => UserLoginUsecase(
-      userRepository: serviceLocator<UserLocalRepository>(),
-  ));
+  serviceLocator.registerFactory(
+    () =>
+        UserLoginUsecase(userRepository: serviceLocator<UserLocalRepository>()),
+  );
 
   // ViewModel
-  serviceLocator.registerLazySingleton(() => RegisterViewModel(
-      registerUsecase: serviceLocator<UserRegisterUsecase>(),
-  ));
+  serviceLocator.registerFactory(
+    () => RegisterViewModel(serviceLocator<UserRegisterUsecase>()),
+  );
 
-  serviceLocator.registerLazySingleton(() => LoginViewModel());
+  serviceLocator.registerFactory(
+    () => LoginViewModel(serviceLocator<UserLoginUsecase>()),
+  );
 }
 
-Future _initSplashModule() async {
+Future<void> _initSplashModule() async {
   serviceLocator.registerFactory(() => SplashScreenViewModel());
 }

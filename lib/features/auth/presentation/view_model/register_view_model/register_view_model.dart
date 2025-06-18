@@ -8,9 +8,9 @@ import 'package:budgethero/features/auth/presentation/view_model/register_view_m
 class RegisterViewModel extends Bloc<RegisterEvent, RegisterUserState> {
   final UserRegisterUsecase _registerUsecase;
 
-  RegisterViewModel({required UserRegisterUsecase registerUsecase})
-    : _registerUsecase = registerUsecase,
-      super(RegisterUserState.initial()) {
+  RegisterViewModel(
+    this._registerUsecase,
+  ) : super(RegisterUserState.initial()) {
     on<RegisterUserEvent>(_registerUserEvent);
   }
 
