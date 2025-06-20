@@ -5,6 +5,7 @@ import 'package:budgethero/features/auth/domain/use_case/login_usecase.dart';
 import 'package:budgethero/features/auth/domain/use_case/register_usecase.dart';
 import 'package:budgethero/features/auth/presentation/view_model/login_view_model/login_view_model.dart';
 import 'package:budgethero/features/auth/presentation/view_model/register_view_model/register_view_model.dart';
+import 'package:budgethero/features/home/presentation/view_model/dashboard_view_model.dart';
 import 'package:budgethero/features/splash_screen/presentation/view_model/splash_screen_view_model.dart';
 import 'package:get_it/get_it.dart';
 
@@ -14,6 +15,7 @@ Future initDependencies() async {
   await _initHiveService();
   await _initAuthModule();
   await _initSplashModule();
+  await _initDashboardModule();
 }
 
 Future _initHiveService() async {
@@ -52,6 +54,13 @@ Future _initAuthModule() async {
 
   serviceLocator.registerFactory(
     () => LoginViewModel(serviceLocator<UserLoginUsecase>()),
+  );
+}
+
+Future<void> _initDashboardModule() async {
+  // ViewModel
+  serviceLocator.registerFactory(
+    () => DashboardViewModel(loginViewModel: serviceLocator<LoginViewModel>()),
   );
 }
 

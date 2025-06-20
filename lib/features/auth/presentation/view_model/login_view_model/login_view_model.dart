@@ -5,6 +5,8 @@ import 'package:budgethero/features/auth/presentation/view/signup_screen.dart';
 import 'package:budgethero/features/auth/presentation/view_model/login_view_model/login_event.dart';
 import 'package:budgethero/features/auth/presentation/view_model/login_view_model/login_state.dart';
 import 'package:budgethero/features/auth/presentation/view_model/register_view_model/register_view_model.dart';
+import 'package:budgethero/features/home/presentation/view/dashboard_screen.dart';
+import 'package:budgethero/features/home/presentation/view_model/dashboard_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -13,7 +15,7 @@ class LoginViewModel extends Bloc<LoginEvent, LoginState> {
 
   LoginViewModel(this._userLoginUsecase) : super(LoginState.initial()) {
     on<NavigateToRegisterViewEvent>(_onNavigateToRegisterView);
-    // on<NavigateToHomeViewEvent>(_onNavigateToHomeView);
+    on<NavigateToHomeViewEvent>(_onNavigateToHomeView);
     on<LoginWithEmailAndPasswordEvent>(_onLoginWithEmailAndPassword);
   }
 
@@ -36,22 +38,23 @@ class LoginViewModel extends Bloc<LoginEvent, LoginState> {
     }
   }
 
-  // void _onNavigateToHomeView(
-  //   NavigateToHomeViewEvent event,
-  //   Emitter<LoginState> emit,
-  // ) {
-  //   if (event.context.mounted) {
-  //     Navigator.pushReplacement(
-  //       event.context,
-  //       MaterialPageRoute(
-  //         builder: (context) => BlocProvider.value(
-  //           value: serviceLocator<Dash>(),
-  //           child: LoginScreen(),
-  //         )
-  //       )
-  //     );
-  //   }
-  // }
+  void _onNavigateToHomeView(
+    NavigateToHomeViewEvent event,
+    Emitter<LoginState> emit,
+  ) {
+    if (event.context.mounted) {
+      Navigator.pushReplacement(
+        event.context,
+        MaterialPageRoute(
+          builder:
+              (context) => BlocProvider.value(
+                value: serviceLocator<DashboardViewModel>(),
+                child: DashboardScreen(onAddTransaction: () {}),
+              ),
+        ),
+      );
+    }
+  }
 
   void _onLoginWithEmailAndPassword(
     LoginWithEmailAndPasswordEvent event,
@@ -77,11 +80,7 @@ class LoginViewModel extends Bloc<LoginEvent, LoginState> {
           content: 'Login successful!',
           color: Colors.green,
         );
-        // Navigate to home view
-        // Navigator.pushReplacement(
-        //   event.context,
-        //   MaterialPageRoute(builder: (context) => LoginScreen()),
-        // );
+        add(NavigateToHomeViewEvent(context: event.context));
       },
     );
   }
