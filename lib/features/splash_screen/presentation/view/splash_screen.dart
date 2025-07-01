@@ -36,47 +36,48 @@ class SplashScreen extends StatelessWidget {
           Center(
             child: Padding(
               padding: const EdgeInsets.symmetric(horizontal: 24.0),
-              child: isPortrait
-                  ? Row(
-                      mainAxisSize: MainAxisSize.min,
-                      crossAxisAlignment: CrossAxisAlignment.baseline,
-                      textBaseline: TextBaseline.alphabetic,
-                      children: [
-                        Image.asset('assets/logo/logo.png', height: 80),
-                        const SizedBox(width: 16),
-                        const Text(
-                          'BUDGET\nHERO',
-                          textAlign: TextAlign.left,
-                          style: TextStyle(
-                            fontFamily: "Jaro",
-                            color: Colors.white,
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                            height: 1.3,
-                            letterSpacing: 1.2,
+              child:
+                  isPortrait
+                      ? Row(
+                        mainAxisSize: MainAxisSize.min,
+                        crossAxisAlignment: CrossAxisAlignment.baseline,
+                        textBaseline: TextBaseline.alphabetic,
+                        children: [
+                          Image.asset('assets/logo/logo.png', height: 80),
+                          const SizedBox(width: 16),
+                          const Text(
+                            'BUDGET\nHERO',
+                            textAlign: TextAlign.left,
+                            style: TextStyle(
+                              fontFamily: "Jaro",
+                              color: Colors.white,
+                              fontSize: 26,
+                              fontWeight: FontWeight.bold,
+                              height: 1.3,
+                              letterSpacing: 1.2,
+                            ),
                           ),
-                        ),
-                      ],
-                    )
-                  : Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Image.asset('assets/logo/logo.png', height: 80),
-                        const SizedBox(height: 16),
-                        const Text(
-                          'BUDGET\nHERO',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: "Jaro",
-                            color: Colors.white,
-                            fontSize: 26,
-                            fontWeight: FontWeight.bold,
-                            height: 1.2,
-                            letterSpacing: 1.2,
+                        ],
+                      )
+                      : Column(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Image.asset('assets/logo/logo.png', height: 80),
+                          const SizedBox(height: 16),
+                          const Text(
+                            'BUDGET\nHERO',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontFamily: "Jaro",
+                              color: Colors.white,
+                              fontSize: 26,
+                              fontWeight: FontWeight.bold,
+                              height: 1.2,
+                              letterSpacing: 1.2,
+                            ),
                           ),
-                        ),
-                      ],
-                    ),
+                        ],
+                      ),
             ),
           ),
         ],
@@ -93,13 +94,13 @@ class CirclePainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
     final center = Offset(size.width / 2, size.height / 2);
-    final paint = Paint()
-      ..color = const Color(0xFFF55345)
-      ..style = PaintingStyle.fill;
+    final paint =
+        Paint()
+          ..color = const Color(0xFFF55345)
+          ..style = PaintingStyle.fill;
     canvas.drawCircle(center, radius, paint);
   }
 
   @override
-  bool shouldRepaint(CirclePainter oldDelegate) =>
-      oldDelegate.radius != radius;
+  bool shouldRepaint(CirclePainter oldDelegate) => oldDelegate.radius != radius;
 }
