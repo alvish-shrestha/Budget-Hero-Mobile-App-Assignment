@@ -6,15 +6,12 @@ part 'user_api_model.g.dart';
 
 @JsonSerializable()
 class UserApiModel extends Equatable {
-  @JsonKey(name: "_id")
-  final String? userId;
   final String username;
   final String email;
   final String? password;
   final String? confirmPassword;
 
   const UserApiModel({
-    this.userId,
     required this.username,
     required this.email,
     this.password,
@@ -28,16 +25,15 @@ class UserApiModel extends Equatable {
 
   factory UserApiModel.fromEntity(UserEntity entity) {
     return UserApiModel(
-      userId: entity.userId,
       username: entity.username,
       email: entity.email,
       password: entity.password,
+      confirmPassword: entity.confirmPassword,
     );
   }
 
   UserEntity toEntity() {
     return UserEntity(
-      userId: userId,
       username: username,
       email: email,
       password: password ?? "",
@@ -46,11 +42,5 @@ class UserApiModel extends Equatable {
   }
 
   @override
-  List<Object?> get props => [
-    userId,
-    username,
-    email,
-    password,
-    confirmPassword,
-  ];
+  List<Object?> get props => [username, email, password, confirmPassword];
 }

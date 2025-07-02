@@ -10,12 +10,14 @@ import 'package:budgethero/features/auth/presentation/view_model/login_view_mode
 import 'package:budgethero/features/auth/presentation/view_model/register_view_model/register_view_model.dart';
 import 'package:budgethero/features/home/presentation/view_model/dashboard_view_model.dart';
 import 'package:budgethero/features/splash_screen/presentation/view_model/splash_screen_view_model.dart';
+import 'package:dio/dio.dart';
 import 'package:get_it/get_it.dart';
 
 final serviceLocator = GetIt.instance;
 
 Future initDependencies() async {
   await _initHiveService();
+  await _initApiService();
   await _initAuthModule();
   await _initSplashModule();
   await _initDashboardModule();
@@ -23,6 +25,10 @@ Future initDependencies() async {
 
 Future _initHiveService() async {
   serviceLocator.registerLazySingleton(() => HiveService());
+}
+
+Future<void> _initApiService() async {
+  serviceLocator.registerLazySingleton(() => ApiService(Dio()));
 }
 
 // -----------------------------------------------------------------------------

@@ -17,8 +17,23 @@ class UserRemoteDatasource implements IUserDataSource {
   }
 
   @override
-  Future<String> loginUser(String email, String password) {
-    throw UnimplementedError();
+  Future<String> loginUser(String email, String password) async {
+    try {
+      final response = await _apiService.dio.post(
+        ApiEndpoints.login,
+        data: {"email": email, "password": password},
+      );
+
+      if (response.statusCode == 200) {
+        return response.data["token"];
+      } else {
+        throw Exception("Failed to login: ${response.statusMessage}");
+      }
+    } on DioException catch (e) {
+      throw Exception("Failed to login: ${e.message}");
+    } catch (e) {
+      throw Exception("An unexpected error occurred: $e");
+    }
   }
 
   @override
