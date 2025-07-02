@@ -15,7 +15,7 @@ class UserRemoteDatasource implements IUserDataSource {
   Future<UserEntity> getCurrentUser() {
     throw UnimplementedError();
   }
-  
+
   @override
   Future<String> loginUser(String email, String password) {
     throw UnimplementedError();
@@ -30,11 +30,11 @@ class UserRemoteDatasource implements IUserDataSource {
         data: userApiModel.toJson(),
       );
 
-      if (response.statusCode == 200) {
+      if (response.statusCode == 201) {
         return;
       } else {
         throw Exception("Failed to register user: ${response.statusMessage}");
-      }      
+      }
     } on DioException catch (e) {
       throw Exception("Failed to register user: ${e.message}");
     } catch (e) {
