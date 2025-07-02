@@ -1,6 +1,9 @@
+import 'package:budgethero/core/network/api_service.dart';
 import 'package:budgethero/core/network/hive_service.dart';
 import 'package:budgethero/features/auth/data/data_source/local_datasource/user_local_datasource.dart';
+import 'package:budgethero/features/auth/data/data_source/remote_datasource/user_remote_datasource.dart';
 import 'package:budgethero/features/auth/data/repository/local_repository/user_local_repository.dart';
+import 'package:budgethero/features/auth/data/repository/remote_repository/user_remote_repository.dart';
 import 'package:budgethero/features/auth/domain/use_case/login_usecase.dart';
 import 'package:budgethero/features/auth/domain/use_case/register_usecase.dart';
 import 'package:budgethero/features/auth/presentation/view_model/login_view_model/login_view_model.dart';
@@ -22,10 +25,15 @@ Future _initHiveService() async {
   serviceLocator.registerLazySingleton(() => HiveService());
 }
 
+// -----------------------------------------------------------------------------
 Future _initAuthModule() async {
   // Data Source
   serviceLocator.registerFactory(
     () => UserLocalDatasource(hiveService: serviceLocator<HiveService>()),
+  );
+
+  serviceLocator.registerFactory(
+    () => UserRemoteDatasource(apiService: serviceLocator<ApiService>()),
   );
 
   // Repository
@@ -35,16 +43,23 @@ Future _initAuthModule() async {
     ),
   );
 
+  serviceLocator.registerFactory(
+    () => UserRemoteRepository(
+      userRemoteDatasource: serviceLocator<UserRemoteDatasource>(),
+    ),
+  );
+
   // Use Cases
   serviceLocator.registerFactory(
     () => UserRegisterUsecase(
-      userRepository: serviceLocator<UserLocalRepository>(),
+      userRepository: serviceLocator<UserRemoteRepository>(),
     ),
   );
 
   serviceLocator.registerFactory(
-    () =>
-        UserLoginUsecase(userRepository: serviceLocator<UserLocalRepository>()),
+    () => UserLoginUsecase(
+      userRepository: serviceLocator<UserRemoteRepository>(),
+    ),
   );
 
   // ViewModel
