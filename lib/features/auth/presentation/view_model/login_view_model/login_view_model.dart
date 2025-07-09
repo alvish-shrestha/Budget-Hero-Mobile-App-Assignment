@@ -7,6 +7,7 @@ import 'package:budgethero/features/auth/presentation/view_model/login_view_mode
 import 'package:budgethero/features/auth/presentation/view_model/register_view_model/register_view_model.dart';
 import 'package:budgethero/features/home/presentation/view/dashboard_screen.dart';
 import 'package:budgethero/features/home/presentation/view_model/dashboard_view_model.dart';
+import 'package:budgethero/features/transaction/presentation/view_model/transaction_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -47,9 +48,16 @@ class LoginViewModel extends Bloc<LoginEvent, LoginState> {
         event.context,
         MaterialPageRoute(
           builder:
-              (context) => BlocProvider.value(
-                value: serviceLocator<DashboardViewModel>(),
-                child: DashboardScreen(onAddTransaction: () {}),
+              (context) => MultiBlocProvider(
+                providers: [
+                  BlocProvider.value(
+                    value: serviceLocator<DashboardViewModel>(),
+                  ),
+                  BlocProvider.value(
+                    value: serviceLocator<TransactionViewModel>(),
+                  ),
+                ],
+                child: const DashboardScreen(),
               ),
         ),
       );
@@ -61,9 +69,11 @@ class LoginViewModel extends Bloc<LoginEvent, LoginState> {
     Emitter<LoginState> emit,
   ) async {
     emit(state.copyWith(isLoading: true));
+
     final result = await _userLoginUsecase(
       LoginUsecaseParams(email: event.email, password: event.password),
     );
+
     result.fold(
       (failure) {
         emit(state.copyWith(isLoading: false, isSuccess: false));
@@ -80,7 +90,12 @@ class LoginViewModel extends Bloc<LoginEvent, LoginState> {
           content: 'Login successful!',
           color: Colors.green,
         );
-        add(NavigateToHomeViewEvent(context: event.context));
+
+        // DEFER navigation to avoid _debugLocked error
+        Future.microtask(() {
+          // ignore: use_build_context_synchronously
+          add(NavigateToHomeViewEvent(context: event.context));
+        });
       },
     );
   }
