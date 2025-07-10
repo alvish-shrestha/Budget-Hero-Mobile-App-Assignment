@@ -6,8 +6,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
 
-class AddTransactionScreen extends StatelessWidget {
-  AddTransactionScreen({super.key});
+class TransactionView extends StatelessWidget {
+  TransactionView({super.key});
 
   final _formKey = GlobalKey<FormState>();
 
@@ -18,8 +18,9 @@ class AddTransactionScreen extends StatelessWidget {
   final ValueNotifier<String> selectedType = ValueNotifier('expense');
   final ValueNotifier<String?> selectedCategory = ValueNotifier(null);
   final ValueNotifier<String?> selectedAccount = ValueNotifier(null);
-
-  final String formattedDate = DateFormat('yyyy-MM-dd').format(DateTime.now());
+  final ValueNotifier<String> selectedDate = ValueNotifier(
+    DateFormat('yyyy-MM-dd').format(DateTime.now()),
+  );
 
   final List<String> incomeCategories = ['Salary', 'Gift', 'Bonus'];
   final List<String> expenseCategories = [
@@ -28,42 +29,42 @@ class AddTransactionScreen extends StatelessWidget {
     'Bills',
     'Shopping',
   ];
-
   final List<String> accountOptions = ['Bank', 'Cash', 'Wallet'];
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: Colors.white,
       appBar: AppBar(title: const Text('Add Transaction')),
       body: BlocConsumer<TransactionViewModel, TransactionState>(
         listener: (context, state) {
-          (context, state) {
-            if (state.isSuccess) {
-              Future.delayed(Duration(milliseconds: 100), () {
-                if (!context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Transaction added!'),
-                    backgroundColor: Colors.green,
-                  ),
-                );
-                Navigator.pop(context);
-              });
-            }
+          if (state.isSuccess) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                const SnackBar(
+                  content: Text('Transaction added!'),
+                  backgroundColor: Color(0xFFF55345),
+                  duration: Duration(milliseconds: 500),
+                ),
+              );
+              // Navigator.pop(context);
+            });
+          }
 
-            if (state.errorMessage != null) {
-              Future.delayed(Duration(milliseconds: 100), () {
-                if (!context.mounted) return;
-                ScaffoldMessenger.of(context).showSnackBar(
-                  SnackBar(
-                    content: Text(state.errorMessage!),
-                    backgroundColor: Colors.red,
-                  ),
-                );
-              });
-            }
-          };
+          if (state.errorMessage != null) {
+            WidgetsBinding.instance.addPostFrameCallback((_) {
+              if (!context.mounted) return;
+              ScaffoldMessenger.of(context).showSnackBar(
+                SnackBar(
+                  content: Text(state.errorMessage!),
+                  backgroundColor: Colors.red,
+                ),
+              );
+            });
+          }
         },
+
         builder: (context, state) {
           return AbsorbPointer(
             absorbing: state.isLoading,
@@ -89,8 +90,8 @@ class AddTransactionScreen extends StatelessWidget {
                                     selected: value == type,
                                     selectedColor:
                                         type == 'income'
-                                            ? Colors.green
-                                            : Colors.redAccent,
+                                            ? Colors.blue
+                                            : Color(0xFFF55345),
                                     onSelected: (_) {
                                       selectedType.value = type;
                                       selectedCategory.value = null;
@@ -103,73 +104,123 @@ class AddTransactionScreen extends StatelessWidget {
                     ),
                     const SizedBox(height: 16),
 
-                    _buildTextField("Amount", _amount, prefix: "Rs"),
+                    const SizedBox(height: 12),
 
-                    // 🔽 Category Dropdown
+                    // Date Picker
                     ValueListenableBuilder(
+                      valueListenable: selectedDate,
+                      builder: (context, date, _) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            const Text(
+                              "Date",
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.black,
+                              ),
+                            ),
+                            const SizedBox(height: 6),
+                            GestureDetector(
+                              onTap: () async {
+                                final picked = await showDatePicker(
+                                  context: context,
+                                  initialDate: DateTime.parse(date),
+                                  firstDate: DateTime(2014),
+                                  lastDate: DateTime(2031, 12, 31),
+                                  helpText: 'Select Transaction Date',
+                                  builder: (context, child) {
+                                    return Theme(
+                                      data: ThemeData.light().copyWith(
+                                        primaryColor: const Color(0xFFF55345),
+                                        colorScheme: const ColorScheme.light(
+                                          primary: Color(0xFFF55345),
+                                        ),
+                                        textTheme: Theme.of(
+                                          context,
+                                        ).textTheme.apply(
+                                          fontFamily: 'Jaro', // or your font
+                                        ),
+                                        textButtonTheme: TextButtonThemeData(
+                                          style: TextButton.styleFrom(
+                                            foregroundColor: const Color(
+                                              0xFFF55345,
+                                            ),
+                                          ),
+                                        ),
+                                      ),
+                                      child: child!,
+                                    );
+                                  },
+                                );
+                                if (picked != null) {
+                                  selectedDate.value = DateFormat(
+                                    'yyyy-MM-dd',
+                                  ).format(picked);
+                                }
+                              },
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 16,
+                                ),
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: Colors.grey.shade400,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Row(
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Text(
+                                      date,
+                                      style: const TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.black,
+                                      ),
+                                    ),
+                                    const Icon(
+                                      Icons.calendar_today,
+                                      color: Colors.black54,
+                                      size: 20,
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 16),
+                          ],
+                        );
+                      },
+                    ),
+
+                    _buildTextField("Amount", _amount, prefix: "Rs.  "),
+
+                    const SizedBox(height: 12),
+
+                    ValueListenableBuilder<String>(
                       valueListenable: selectedType,
                       builder: (context, type, _) {
-                        final categories =
-                            type == 'income'
-                                ? incomeCategories
-                                : expenseCategories;
-                        return ValueListenableBuilder(
-                          valueListenable: selectedCategory,
-                          builder: (context, selected, _) {
-                            return DropdownButtonFormField<String>(
-                              value: selected,
-                              items:
-                                  categories
-                                      .map(
-                                        (cat) => DropdownMenuItem(
-                                          value: cat,
-                                          child: Text(cat),
-                                        ),
-                                      )
-                                      .toList(),
-                              onChanged: (val) => selectedCategory.value = val,
-                              decoration: const InputDecoration(
-                                labelText: 'Category',
-                              ),
-                              validator:
-                                  (value) =>
-                                      value == null
-                                          ? 'Please select category'
-                                          : null,
-                            );
-                          },
+                        return _buildDropdown(
+                          "Category",
+                          selectedType,
+                          selectedCategory,
+                          incomeCategories,
+                          expenseCategories,
                         );
                       },
                     ),
 
                     const SizedBox(height: 12),
-
-                    // 🔽 Account Dropdown
-                    ValueListenableBuilder(
-                      valueListenable: selectedAccount,
-                      builder: (context, selected, _) {
-                        return DropdownButtonFormField<String>(
-                          value: selected,
-                          items:
-                              accountOptions
-                                  .map(
-                                    (acc) => DropdownMenuItem(
-                                      value: acc,
-                                      child: Text(acc),
-                                    ),
-                                  )
-                                  .toList(),
-                          onChanged: (val) => selectedAccount.value = val,
-                          decoration: const InputDecoration(
-                            labelText: 'Account',
-                          ),
-                          validator:
-                              (value) =>
-                                  value == null
-                                      ? 'Please select account'
-                                      : null,
-                        );
-                      },
+                    _buildDropdown(
+                      "Account",
+                      null,
+                      selectedAccount,
+                      accountOptions,
+                      accountOptions,
                     ),
 
                     const SizedBox(height: 12),
@@ -177,39 +228,44 @@ class AddTransactionScreen extends StatelessWidget {
                     _buildTextField("Description", _description),
                     const SizedBox(height: 20),
 
-                    ElevatedButton(
-                      onPressed: () {
-                        if (_formKey.currentState!.validate()) {
-                          final transaction = TransactionEntity(
-                            type: selectedType.value,
-                            date: formattedDate,
-                            amount: double.parse(_amount.text),
-                            category: selectedCategory.value!,
-                            account: selectedAccount.value!,
-                            note: _note.text,
-                            description: _description.text,
-                          );
+                    ValueListenableBuilder<String>(
+                      valueListenable: selectedType,
+                      builder: (context, type, _) {
+                        return ElevatedButton(
+                          onPressed: () {
+                            if (_formKey.currentState!.validate()) {
+                              final transaction = TransactionEntity(
+                                type: selectedType.value,
+                                date: selectedDate.value,
+                                amount: double.parse(_amount.text),
+                                category: selectedCategory.value!,
+                                account: selectedAccount.value!,
+                                note: _note.text,
+                                description: _description.text,
+                              );
 
-                          context.read<TransactionViewModel>().add(
-                            AddTransactionEvent(
-                              context: context,
-                              transaction: transaction,
-                            ),
-                          );
-                        }
+                              context.read<TransactionViewModel>().add(
+                                AddTransactionEvent(
+                                  context: context,
+                                  transaction: transaction,
+                                ),
+                              );
+                            }
+                          },
+                          style: ElevatedButton.styleFrom(
+                            backgroundColor:
+                                type == 'income'
+                                    ? Colors.blue
+                                    : const Color(0xFFF55345),
+                          ),
+                          child:
+                              state.isLoading
+                                  ? const CircularProgressIndicator(
+                                    color: Colors.white,
+                                  )
+                                  : const Text('Save Transaction'),
+                        );
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor:
-                            selectedType.value == 'income'
-                                ? Colors.green
-                                : Colors.redAccent,
-                      ),
-                      child:
-                          state.isLoading
-                              ? const CircularProgressIndicator(
-                                color: Colors.white,
-                              )
-                              : const Text('Save Transaction'),
                     ),
                   ],
                 ),
@@ -232,14 +288,75 @@ class AddTransactionScreen extends StatelessWidget {
         controller: controller,
         keyboardType:
             label == "Amount" ? TextInputType.number : TextInputType.text,
+        style: const TextStyle(color: Colors.black),
         decoration: InputDecoration(
           labelText: label,
+          labelStyle: const TextStyle(color: Colors.black),
+          floatingLabelStyle: const TextStyle(color: Colors.black),
           prefixText: prefix,
-          border: const OutlineInputBorder(),
+          prefixStyle: const TextStyle(color: Colors.black),
+          errorStyle: const TextStyle(color: Colors.redAccent),
+          border: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey.shade400),
+          ),
+          enabledBorder: OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.grey.shade400),
+          ),
+          focusedBorder: const OutlineInputBorder(
+            borderSide: BorderSide(color: Colors.blue, width: 2),
+          ),
         ),
         validator:
             (value) => value == null || value.isEmpty ? 'Required' : null,
       ),
+    );
+  }
+
+  Widget _buildDropdown(
+    String label,
+    ValueNotifier<String>? type,
+    ValueNotifier<String?> selected,
+    List<String> income,
+    List<String> expense,
+  ) {
+    return ValueListenableBuilder(
+      valueListenable: selected,
+      builder: (context, selectedVal, _) {
+        final items =
+            type == null ? income : (type.value == 'income' ? income : expense);
+        return DropdownButtonFormField<String>(
+          value: selectedVal,
+          items:
+              items.map((item) {
+                return DropdownMenuItem(
+                  value: item,
+                  child: Text(
+                    item,
+                    style: const TextStyle(color: Colors.black),
+                  ),
+                );
+              }).toList(),
+          onChanged: (val) => selected.value = val,
+          decoration: InputDecoration(
+            labelText: label,
+            labelStyle: const TextStyle(color: Colors.black),
+            floatingLabelStyle: const TextStyle(color: Colors.black),
+            errorStyle: const TextStyle(color: Colors.redAccent),
+            border: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey.shade400),
+            ),
+            enabledBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.grey.shade400),
+            ),
+            focusedBorder: const OutlineInputBorder(
+              borderSide: BorderSide(color: Colors.blue, width: 2),
+            ),
+          ),
+          validator:
+              (value) =>
+                  value == null ? 'Please select $label'.toLowerCase() : null,
+        );
+      },
     );
   }
 }

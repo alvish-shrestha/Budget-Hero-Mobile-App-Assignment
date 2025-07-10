@@ -4,6 +4,7 @@ import 'package:budgethero/features/transaction/presentation/view/transaction_vi
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:budgethero/features/transaction/presentation/view_model/transaction_view_model.dart';
+import 'package:intl/intl.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
@@ -12,7 +13,7 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // 🚀 Dispatch loadTransactions after build
+    // Dispatch loadTransactions after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<DashboardViewModel>().loadTransactions();
     });
@@ -39,18 +40,24 @@ class DashboardScreen extends StatelessWidget {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (_) => BlocProvider.value(
-                    value: context.read<TransactionViewModel>(),
-                    child: AddTransactionScreen(),
-                  ),
+                  builder:
+                      (_) => BlocProvider.value(
+                        value: context.read<TransactionViewModel>(),
+                        child: TransactionView(),
+                      ),
                 ),
-              // ignore: use_build_context_synchronously
-              ).then((_) => context.read<DashboardViewModel>().loadTransactions());
+                // ignore: use_build_context_synchronously
+              ).then(
+                // ignore: use_build_context_synchronously
+                (_) => context.read<DashboardViewModel>().loadTransactions(),
+              );
             },
             backgroundColor: primaryRed,
             child: const Icon(Icons.add),
           ),
-          floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+          backgroundColor: Colors.white,
+          floatingActionButtonLocation:
+              FloatingActionButtonLocation.centerDocked,
           bottomNavigationBar: BottomAppBar(
             shape: const CircularNotchedRectangle(),
             notchMargin: 8.0,
@@ -68,9 +75,15 @@ class DashboardScreen extends StatelessWidget {
                   return IconButton(
                     icon: Icon(
                       icons[index],
-                      color: state.selectedIndex == index ? primaryRed : Colors.black54,
+                      color:
+                          state.selectedIndex == index
+                              ? primaryRed
+                              : Colors.black54,
                     ),
-                    onPressed: () => context.read<DashboardViewModel>().onItemTapped(index),
+                    onPressed:
+                        () => context.read<DashboardViewModel>().onItemTapped(
+                          index,
+                        ),
                   );
                 }),
               ),
@@ -81,31 +94,75 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildDashboardContent(BuildContext context, DashboardState state, double income, double expense, double total) {
+  Widget _buildDashboardContent(
+    BuildContext context,
+    DashboardState state,
+    double income,
+    double expense,
+    double total,
+  ) {
     if (state.selectedIndex != 0) {
       return state.screens[state.selectedIndex];
+    }
+
+    // Group transactions by date
+    final groupedTransactions = <String, List<_TransactionItem>>{};
+    for (var tx in state.transactions) {
+      final item = _TransactionItem(
+        date: tx.date,
+        category: tx.category,
+        title: tx.note,
+        amount: 'Rs ${tx.amount.toStringAsFixed(2)}',
+        isExpense: tx.type == 'expense',
+        account: tx.account,
+      );
+
+      groupedTransactions.putIfAbsent(tx.date, () => []).add(item);
     }
 
     return SingleChildScrollView(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildHeader(income, expense, total),
+          _buildHeader(
+            context,
+            income,
+            expense,
+            total,
+            context.read<DashboardViewModel>().state.selectedMonth,
+          ),
           const SizedBox(height: 12),
           if (state.isLoading)
             const Center(child: CircularProgressIndicator())
           else if (state.transactions.isEmpty)
             const Center(child: Text('No transactions yet'))
           else
-            ...state.transactions.map((tx) {
-              return _TransactionItem(
-                date: tx.date,
-                categoryIcon: Icons.category,
-                category: tx.category,
-                title: tx.description,
-                amount: 'Rs ${tx.amount.toStringAsFixed(2)}',
-                isExpense: tx.type == 'expense',
-                account: tx.account,
+            ...groupedTransactions.entries.map((entry) {
+              final date = entry.key;
+              final items = entry.value;
+
+              return Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Date Header
+                    Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Text(
+                        date,
+                        style: const TextStyle(
+                          fontSize: 16,
+                          fontWeight: FontWeight.bold,
+                          color: Colors.black87,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 4),
+                    // All transactions under that date
+                    ...items,
+                  ],
+                ),
               );
             }),
         ],
@@ -113,7 +170,13 @@ class DashboardScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(double income, double expense, double total) {
+  Widget _buildHeader(
+    BuildContext context,
+    double income,
+    double expense,
+    double total,
+    DateTime selectedMonth,
+  ) {
     return Container(
       decoration: const BoxDecoration(
         color: primaryRed,
@@ -136,14 +199,30 @@ class DashboardScreen extends StatelessWidget {
           const SizedBox(height: 8),
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: const [
-              Icon(Icons.arrow_left, color: Colors.white),
-              SizedBox(width: 8),
-              Text("May 2025", style: TextStyle(color: Colors.white)),
-              SizedBox(width: 8),
-              Icon(Icons.arrow_right, color: Colors.white),
+            children: [
+              IconButton(
+                icon: const Icon(Icons.arrow_left, color: Colors.white),
+                onPressed: () {
+                  context.read<DashboardViewModel>().previousMonth();
+                },
+              ),
+              const SizedBox(width: 8),
+              Text(
+                DateFormat('MMMM yyyy').format(
+                  context.read<DashboardViewModel>().state.selectedMonth,
+                ),
+                style: const TextStyle(color: Colors.white),
+              ),
+              const SizedBox(width: 8),
+              IconButton(
+                icon: const Icon(Icons.arrow_right, color: Colors.white),
+                onPressed: () {
+                  context.read<DashboardViewModel>().nextMonth();
+                },
+              ),
             ],
           ),
+
           const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -154,9 +233,21 @@ class DashboardScreen extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceAround,
               children: [
-                _SummaryTile(label: 'Income', value: income.toStringAsFixed(2), color: Colors.blue),
-                _SummaryTile(label: 'Exp', value: expense.toStringAsFixed(2), color: Colors.red),
-                _SummaryTile(label: 'Total', value: total.toStringAsFixed(2), color: Colors.black),
+                _SummaryTile(
+                  label: 'Income',
+                  value: income.toStringAsFixed(2),
+                  color: Colors.blue,
+                ),
+                _SummaryTile(
+                  label: 'Expenses',
+                  value: expense.toStringAsFixed(2),
+                  color: Colors.red,
+                ),
+                _SummaryTile(
+                  label: 'Total',
+                  value: total.toStringAsFixed(2),
+                  color: Colors.black,
+                ),
               ],
             ),
           ),
@@ -181,10 +272,17 @@ class _SummaryTile extends StatelessWidget {
   Widget build(BuildContext context) {
     return Column(
       children: [
-        Text(label, style: const TextStyle(fontSize: 14, color: Colors.black54)),
+        Text(
+          label,
+          style: const TextStyle(fontSize: 14, color: Colors.black54),
+        ),
         Text(
           value,
-          style: TextStyle(fontSize: 16, color: color, fontWeight: FontWeight.bold),
+          style: TextStyle(
+            fontSize: 16,
+            color: color,
+            fontWeight: FontWeight.bold,
+          ),
         ),
       ],
     );
@@ -193,7 +291,6 @@ class _SummaryTile extends StatelessWidget {
 
 class _TransactionItem extends StatelessWidget {
   final String date;
-  final IconData categoryIcon;
   final String category;
   final String title;
   final String amount;
@@ -202,7 +299,6 @@ class _TransactionItem extends StatelessWidget {
 
   const _TransactionItem({
     required this.date,
-    required this.categoryIcon,
     required this.category,
     required this.title,
     required this.amount,
@@ -212,25 +308,46 @@ class _TransactionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    IconData getCategoryIcon(String category) {
+      switch (category.toLowerCase()) {
+        case 'food':
+          return Icons.fastfood;
+        case 'transport':
+          return Icons.directions_car;
+        case 'bills':
+          return Icons.receipt;
+        case 'shopping':
+          return Icons.shopping_bag;
+        case 'salary':
+          return Icons.attach_money;
+        case 'gift':
+          return Icons.card_giftcard;
+        case 'bonus':
+          return Icons.star;
+        default:
+          return Icons.category;
+      }
+    }
+
+    final iconColor = isExpense ? Colors.red : Colors.blue;
+
     return Column(
       children: [
-        if (date.isNotEmpty)
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Text(date, style: const TextStyle(fontWeight: FontWeight.bold)),
-                Text(
-                  amount,
-                  style: TextStyle(
-                    color: isExpense ? Colors.red : Colors.green,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ],
-            ),
-          ),
+        // Padding(
+        //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        //   child: Row(
+        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        //     children: [
+        //       Text(
+        //         date,
+        //         style: const TextStyle(
+        //           color: Colors.black,
+        //           // fontWeight: FontWeight.bold,
+        //         ),
+        //       ),
+        //     ],
+        //   ),
+        // ),
         Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           padding: const EdgeInsets.all(12),
@@ -240,23 +357,33 @@ class _TransactionItem extends StatelessWidget {
           ),
           child: Row(
             children: [
-              Icon(categoryIcon, size: 30),
+              Icon(getCategoryIcon(category), color: iconColor, size: 30),
               const SizedBox(width: 12),
               Expanded(
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
-                    Text(account, style: const TextStyle(fontSize: 12, color: Colors.black54)),
+                    Text(
+                      title,
+                      style: TextStyle(
+                        color: iconColor,
+                        fontSize: 16,
+                        // fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                    Text(
+                      account,
+                      style: const TextStyle(
+                        fontSize: 12,
+                        color: Colors.black54,
+                      ),
+                    ),
                   ],
                 ),
               ),
               Text(
-                isExpense ? '- $amount' : amount,
-                style: TextStyle(
-                  color: isExpense ? Colors.redAccent : Colors.green,
-                  fontWeight: FontWeight.bold,
-                ),
+                isExpense ? ' $amount' : amount,
+                style: TextStyle(color: iconColor),
               ),
             ],
           ),

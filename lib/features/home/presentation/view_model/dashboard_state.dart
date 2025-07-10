@@ -1,6 +1,6 @@
 import 'package:budgethero/features/transaction/domain/entity/transaction_entity.dart';
-import 'package:flutter/material.dart';
 import 'package:equatable/equatable.dart';
+import 'package:flutter/material.dart';
 
 class DashboardState extends Equatable {
   final int selectedIndex;
@@ -8,12 +8,14 @@ class DashboardState extends Equatable {
   final List<TransactionEntity> transactions;
   final bool isLoading;
   final String? errorMessage;
+  final DateTime selectedMonth;
 
   const DashboardState({
     required this.selectedIndex,
     required this.screens,
     required this.transactions,
     required this.isLoading,
+    required this.selectedMonth,
     this.errorMessage,
   });
 
@@ -48,6 +50,7 @@ class DashboardState extends Equatable {
       ],
       transactions: const [],
       isLoading: false,
+      selectedMonth: DateTime.now(),
       errorMessage: null,
     );
   }
@@ -57,6 +60,7 @@ class DashboardState extends Equatable {
     List<Widget>? screens,
     List<TransactionEntity>? transactions,
     bool? isLoading,
+    DateTime? selectedMonth,
     String? errorMessage,
   }) {
     return DashboardState(
@@ -64,10 +68,18 @@ class DashboardState extends Equatable {
       screens: screens ?? this.screens,
       transactions: transactions ?? this.transactions,
       isLoading: isLoading ?? this.isLoading,
+      selectedMonth: selectedMonth ?? this.selectedMonth,
       errorMessage: errorMessage,
     );
   }
 
   @override
-  List<Object?> get props => [selectedIndex, screens, transactions, isLoading, errorMessage];
+  List<Object?> get props => [
+    selectedIndex,
+    screens,
+    transactions,
+    isLoading,
+    selectedMonth,
+    errorMessage,
+  ];
 }

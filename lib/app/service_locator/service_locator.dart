@@ -128,6 +128,7 @@ Future<void> _initDashboardModule() async {
     () => DashboardViewModel(
       loginViewModel: serviceLocator<LoginViewModel>(),
       getAllTransactionsUsecase: serviceLocator<GetAllTransactionsUsecase>(),
+      
     ),
   );
 }
