@@ -49,14 +49,14 @@ class TransactionViewModel extends Bloc<TransactionEvent, TransactionState> {
           color: Colors.green,
         );
 
-        // ✅ Pop screen safely
+        // Pop screen safely
         WidgetsBinding.instance.addPostFrameCallback((_) {
           if (event.context.mounted) {
             Navigator.pop(event.context);
           }
         });
 
-        // 🔄 Refresh transaction list
+        // Refresh transaction list
         add(GetAllTransactionsEvent());
       },
     );
@@ -90,7 +90,7 @@ class TransactionViewModel extends Bloc<TransactionEvent, TransactionState> {
     NavigateToAddTransactionViewEvent event,
     Emitter<TransactionState> emit,
   ) {
-    // ✅ Set flag so UI can navigate
+    // Set flag so UI can navigate
     emit(state.copyWith(navigateToAdd: true));
   }
 

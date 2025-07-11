@@ -15,7 +15,7 @@ class DashboardScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     // Dispatch loadTransactions after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<DashboardViewModel>().loadTransactions();
+      context.read<DashboardViewModel>().loadTransactionsForSelectedMonth();
     });
 
     return BlocBuilder<DashboardViewModel, DashboardState>(
@@ -46,10 +46,12 @@ class DashboardScreen extends StatelessWidget {
                         child: TransactionView(),
                       ),
                 ),
-                // ignore: use_build_context_synchronously
               ).then(
-                // ignore: use_build_context_synchronously
-                (_) => context.read<DashboardViewModel>().loadTransactions(),
+                (_) =>
+                    // ignore: use_build_context_synchronously
+                    context
+                        .read<DashboardViewModel>()
+                        .loadTransactionsForSelectedMonth(),
               );
             },
             backgroundColor: primaryRed,
