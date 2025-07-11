@@ -1,3 +1,4 @@
+import 'package:budgethero/core/common/snackbar/snackbar.dart';
 import 'package:budgethero/features/home/presentation/view_model/dashboard_state.dart';
 import 'package:budgethero/features/home/presentation/view_model/dashboard_view_model.dart';
 import 'package:budgethero/features/transaction/presentation/view/transaction_view.dart';
@@ -13,7 +14,6 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Dispatch loadTransactions after build
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<DashboardViewModel>().loadTransactionsForSelectedMonth();
     });
@@ -107,10 +107,10 @@ class DashboardScreen extends StatelessWidget {
       return state.screens[state.selectedIndex];
     }
 
-    // Group transactions by date
     final groupedTransactions = <String, List<_TransactionItem>>{};
     for (var tx in state.transactions) {
       final item = _TransactionItem(
+        id: tx.id,
         date: tx.date,
         category: tx.category,
         title: tx.note,
@@ -118,7 +118,6 @@ class DashboardScreen extends StatelessWidget {
         isExpense: tx.type == 'expense',
         account: tx.account,
       );
-
       groupedTransactions.putIfAbsent(tx.date, () => []).add(item);
     }
 
@@ -142,13 +141,11 @@ class DashboardScreen extends StatelessWidget {
             ...groupedTransactions.entries.map((entry) {
               final date = entry.key;
               final items = entry.value;
-
               return Padding(
                 padding: const EdgeInsets.symmetric(vertical: 6),
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Date Header
                     Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Text(
@@ -161,8 +158,80 @@ class DashboardScreen extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    // All transactions under that date
-                    ...items,
+                    ...items.map(
+                      (txItem) => Builder(
+                        builder:
+                            (context) => Dismissible(
+                              key: UniqueKey(),
+                              direction: DismissDirection.endToStart,
+                              background: Container(
+                                color: primaryRed,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 20,
+                                ),
+                                alignment: Alignment.centerRight,
+                                child: const Icon(
+                                  Icons.delete,
+                                  color: Colors.white,
+                                ),
+                              ),
+                              confirmDismiss: (direction) async {
+                                return await showDialog(
+                                  context: context,
+                                  builder:
+                                      (_) => AlertDialog(
+                                        title: const Text(
+                                          'Do you want to delete?',
+                                          style: TextStyle(color: primaryRed),
+                                        ),
+                                        content: const Text(
+                                          'Are you sure you want to delete this transaction?',
+                                        ),
+                                        actions: [
+                                          TextButton(
+                                            onPressed:
+                                                () => Navigator.of(
+                                                  context,
+                                                ).pop(false),
+                                            child: const Text('Cancel'),
+                                          ),
+                                          TextButton(
+                                            onPressed:
+                                                () => Navigator.of(
+                                                  context,
+                                                ).pop(true),
+                                            child: const Text(
+                                              'Delete',
+                                              style: TextStyle(
+                                                color: primaryRed,
+                                              ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                );
+                              },
+                              onDismissed: (_) async {
+                                await context
+                                    .read<DashboardViewModel>()
+                                    .deleteTransactionAndRefresh(txItem.id);
+
+                                if (context.mounted) {
+                                  Future.delayed(Duration.zero, () {
+                                    showMySnackbar(
+                                      // ignore: use_build_context_synchronously
+                                      context: context,
+                                      content: "Transaction deleted",
+                                      color: Colors.green,
+                                    );
+                                  });
+                                }
+                              },
+
+                              child: txItem,
+                            ),
+                      ),
+                    ),
                   ],
                 ),
               );
@@ -210,9 +279,7 @@ class DashboardScreen extends StatelessWidget {
               ),
               const SizedBox(width: 8),
               Text(
-                DateFormat('MMMM yyyy').format(
-                  context.read<DashboardViewModel>().state.selectedMonth,
-                ),
+                DateFormat('MMMM yyyy').format(selectedMonth),
                 style: const TextStyle(color: Colors.white),
               ),
               const SizedBox(width: 8),
@@ -224,7 +291,6 @@ class DashboardScreen extends StatelessWidget {
               ),
             ],
           ),
-
           const SizedBox(height: 12),
           Container(
             padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
@@ -292,6 +358,7 @@ class _SummaryTile extends StatelessWidget {
 }
 
 class _TransactionItem extends StatelessWidget {
+  final String id;
   final String date;
   final String category;
   final String title;
@@ -300,6 +367,7 @@ class _TransactionItem extends StatelessWidget {
   final bool isExpense;
 
   const _TransactionItem({
+    required this.id,
     required this.date,
     required this.category,
     required this.title,
@@ -333,64 +401,35 @@ class _TransactionItem extends StatelessWidget {
 
     final iconColor = isExpense ? Colors.red : Colors.blue;
 
-    return Column(
-      children: [
-        // Padding(
-        //   padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-        //   child: Row(
-        //     mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        //     children: [
-        //       Text(
-        //         date,
-        //         style: const TextStyle(
-        //           color: Colors.black,
-        //           // fontWeight: FontWeight.bold,
-        //         ),
-        //       ),
-        //     ],
-        //   ),
-        // ),
-        Container(
-          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          padding: const EdgeInsets.all(12),
-          decoration: BoxDecoration(
-            border: Border.all(color: Colors.black12),
-            borderRadius: BorderRadius.circular(8),
-          ),
-          child: Row(
-            children: [
-              Icon(getCategoryIcon(category), color: iconColor, size: 30),
-              const SizedBox(width: 12),
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      title,
-                      style: TextStyle(
-                        color: iconColor,
-                        fontSize: 16,
-                        // fontWeight: FontWeight.bold,
-                      ),
-                    ),
-                    Text(
-                      account,
-                      style: const TextStyle(
-                        fontSize: 12,
-                        color: Colors.black54,
-                      ),
-                    ),
-                  ],
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        border: Border.all(color: Colors.black12),
+        borderRadius: BorderRadius.circular(8),
+      ),
+      child: Row(
+        children: [
+          Icon(getCategoryIcon(category), color: iconColor, size: 30),
+          const SizedBox(width: 12),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(title, style: TextStyle(color: iconColor, fontSize: 16)),
+                Text(
+                  account,
+                  style: const TextStyle(fontSize: 12, color: Colors.black54),
                 ),
-              ),
-              Text(
-                isExpense ? ' $amount' : amount,
-                style: TextStyle(color: iconColor),
-              ),
-            ],
+              ],
+            ),
           ),
-        ),
-      ],
+          Text(
+            isExpense ? ' $amount' : amount,
+            style: TextStyle(color: iconColor),
+          ),
+        ],
+      ),
     );
   }
 }

@@ -1,5 +1,6 @@
 import 'package:budgethero/core/common/snackbar/snackbar.dart';
 import 'package:budgethero/features/transaction/domain/use_case/add_transaction_usecase.dart';
+import 'package:budgethero/features/transaction/domain/use_case/delete_transaction_usecase.dart';
 import 'package:budgethero/features/transaction/domain/use_case/get_all_transaction_usecase.dart';
 import 'package:budgethero/features/transaction/presentation/view_model/transaction_event.dart';
 import 'package:budgethero/features/transaction/presentation/view_model/transaction_state.dart';
@@ -9,15 +10,19 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 class TransactionViewModel extends Bloc<TransactionEvent, TransactionState> {
   final AddTransactionUsecase _addTransactionUsecase;
   final GetAllTransactionsUsecase _getAllTransactionsUsecase;
+  final DeleteTransactionUsecase _deleteTransactionUsecase;
 
   TransactionViewModel({
     required AddTransactionUsecase addTransactionUsecase,
     required GetAllTransactionsUsecase getAllTransactionsUsecase,
+    required DeleteTransactionUsecase deleteTransactionUsecase,
   }) : _addTransactionUsecase = addTransactionUsecase,
        _getAllTransactionsUsecase = getAllTransactionsUsecase,
+       _deleteTransactionUsecase = deleteTransactionUsecase,
        super(const TransactionState.initial()) {
     on<AddTransactionEvent>(_onAddTransaction);
     on<GetAllTransactionsEvent>(_onGetAllTransactions);
+    on<DeleteTransactionEvent>(_onDeleteTransaction);
     on<NavigateToAddTransactionViewEvent>(_onNavigateToAddTransaction);
     on<TransactionNavigationHandled>(_onTransactionNavigationHandled);
   }
@@ -99,5 +104,17 @@ class TransactionViewModel extends Bloc<TransactionEvent, TransactionState> {
     Emitter<TransactionState> emit,
   ) {
     emit(state.copyWith(navigateToAdd: false));
+  }
+
+  void _onDeleteTransaction(
+    DeleteTransactionEvent event,
+    Emitter<TransactionState> emit,
+  ) async {
+    final result = await _deleteTransactionUsecase(event.transactionId);
+    result.fold(
+      (failure) =>
+          emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
+      (_) => add(GetAllTransactionsEvent()),
+    );
   }
 }

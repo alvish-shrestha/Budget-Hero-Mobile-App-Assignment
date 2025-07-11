@@ -1,3 +1,4 @@
+import 'package:budgethero/core/common/snackbar/snackbar.dart';
 import 'package:budgethero/features/transaction/domain/entity/transaction_entity.dart';
 import 'package:budgethero/features/transaction/presentation/view_model/transaction_event.dart';
 import 'package:budgethero/features/transaction/presentation/view_model/transaction_state.dart';
@@ -5,6 +6,7 @@ import 'package:budgethero/features/transaction/presentation/view_model/transact
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:uuid/uuid.dart';
 
 class TransactionView extends StatelessWidget {
   TransactionView({super.key});
@@ -31,6 +33,8 @@ class TransactionView extends StatelessWidget {
   ];
   final List<String> accountOptions = ['Bank', 'Cash', 'Wallet'];
 
+  final uuid = Uuid();
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,13 +45,6 @@ class TransactionView extends StatelessWidget {
           if (state.isSuccess) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!context.mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                const SnackBar(
-                  content: Text('Transaction added!'),
-                  backgroundColor: Color(0xFFF55345),
-                  duration: Duration(milliseconds: 500),
-                ),
-              );
               // Navigator.pop(context);
             });
           }
@@ -55,12 +52,7 @@ class TransactionView extends StatelessWidget {
           if (state.errorMessage != null) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!context.mounted) return;
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(state.errorMessage!),
-                  backgroundColor: Colors.red,
-                ),
-              );
+              showMySnackbar(context: context, content: state.errorMessage!);
             });
           }
         },
@@ -235,6 +227,7 @@ class TransactionView extends StatelessWidget {
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               final transaction = TransactionEntity(
+                                id: uuid.v4(),
                                 type: selectedType.value,
                                 date: selectedDate.value,
                                 amount: double.parse(_amount.text),
@@ -261,7 +254,7 @@ class TransactionView extends StatelessWidget {
                           child:
                               state.isLoading
                                   ? const CircularProgressIndicator(
-                                    color: Colors.white,
+                                    color: Color(0xFFF55345),
                                   )
                                   : const Text('Save Transaction'),
                         );

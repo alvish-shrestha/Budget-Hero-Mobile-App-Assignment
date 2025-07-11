@@ -1,4 +1,5 @@
 class TransactionEntity {
+  final String id;
   final String type;
   final String date;
   final double amount;
@@ -8,6 +9,7 @@ class TransactionEntity {
   final String description;
 
   TransactionEntity({
+    required this.id,
     required this.type,
     required this.date,
     required this.amount,

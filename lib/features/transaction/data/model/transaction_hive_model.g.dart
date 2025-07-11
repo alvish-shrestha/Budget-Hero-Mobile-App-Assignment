@@ -17,6 +17,7 @@ class TransactionHiveModelAdapter extends TypeAdapter<TransactionHiveModel> {
       for (int i = 0; i < numOfFields; i++) reader.readByte(): reader.read(),
     };
     return TransactionHiveModel(
+      id: fields[7] as String,
       type: fields[0] as String,
       date: fields[1] as String,
       amount: fields[2] as double,
@@ -30,7 +31,7 @@ class TransactionHiveModelAdapter extends TypeAdapter<TransactionHiveModel> {
   @override
   void write(BinaryWriter writer, TransactionHiveModel obj) {
     writer
-      ..writeByte(7)
+      ..writeByte(8)
       ..writeByte(0)
       ..write(obj.type)
       ..writeByte(1)
@@ -44,7 +45,9 @@ class TransactionHiveModelAdapter extends TypeAdapter<TransactionHiveModel> {
       ..writeByte(5)
       ..write(obj.note)
       ..writeByte(6)
-      ..write(obj.description);
+      ..write(obj.description)
+      ..writeByte(7)
+      ..write(obj.id);
   }
 
   @override

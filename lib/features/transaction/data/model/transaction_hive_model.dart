@@ -27,7 +27,11 @@ class TransactionHiveModel extends Equatable {
   @HiveField(6)
   final String description;
 
+  @HiveField(7)
+  final String id;
+
   const TransactionHiveModel({
+    required this.id,
     required this.type,
     required this.date,
     required this.amount,
@@ -40,6 +44,7 @@ class TransactionHiveModel extends Equatable {
   // Convert to Entity
   TransactionEntity toEntity() {
     return TransactionEntity(
+      id: id,
       type: type,
       date: date,
       amount: amount,
@@ -53,6 +58,7 @@ class TransactionHiveModel extends Equatable {
   // Create from Entity
   factory TransactionHiveModel.fromEntity(TransactionEntity entity) {
     return TransactionHiveModel(
+      id: entity.id,
       type: entity.type,
       date: entity.date,
       amount: entity.amount,

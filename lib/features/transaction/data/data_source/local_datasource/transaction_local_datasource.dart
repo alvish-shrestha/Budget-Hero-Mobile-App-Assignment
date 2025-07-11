@@ -11,7 +11,7 @@ class TransactionLocalDatasource implements ITransactionLocalDatasource {
   final HiveService _hiveService;
 
   TransactionLocalDatasource({required HiveService hiveService})
-      : _hiveService = hiveService;
+    : _hiveService = hiveService;
 
   @override
   Future<void> addTransaction(TransactionEntity transaction) async {
@@ -31,5 +31,9 @@ class TransactionLocalDatasource implements ITransactionLocalDatasource {
     } catch (e) {
       throw Exception('Failed to fetch transactions: $e');
     }
+  }
+
+  Future<void> deleteTransaction(String transactionId) async {
+    await _hiveService.deleteTransactionById(transactionId);
   }
 }

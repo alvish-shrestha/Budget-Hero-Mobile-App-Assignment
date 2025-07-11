@@ -27,3 +27,10 @@ class NavigateToAddTransactionViewEvent extends TransactionEvent {
 
 // Reset navigation flag after navigating to AddTransaction screen
 class TransactionNavigationHandled extends TransactionEvent {}
+
+class DeleteTransactionEvent extends TransactionEvent {
+  final String transactionId;
+
+  DeleteTransactionEvent(this.transactionId);
+}
+

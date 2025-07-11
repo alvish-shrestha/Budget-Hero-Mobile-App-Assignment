@@ -7,16 +7,21 @@ import 'package:dartz/dartz.dart';
 class TransactionLocalRepository implements TransactionRepository {
   final TransactionLocalDatasource _localDatasource;
 
-  TransactionLocalRepository({required TransactionLocalDatasource localDatasource})
-      : _localDatasource = localDatasource;
+  TransactionLocalRepository({
+    required TransactionLocalDatasource localDatasource,
+  }) : _localDatasource = localDatasource;
 
   @override
-  Future<Either<Failure, void>> addTransaction(TransactionEntity transaction) async {
+  Future<Either<Failure, void>> addTransaction(
+    TransactionEntity transaction,
+  ) async {
     try {
       await _localDatasource.addTransaction(transaction);
       return const Right(null);
     } catch (e) {
-      return Left(LocalDataBaseFailure(message: 'Failed to add transaction: $e'));
+      return Left(
+        LocalDataBaseFailure(message: 'Failed to add transaction: $e'),
+      );
     }
   }
 
@@ -26,7 +31,21 @@ class TransactionLocalRepository implements TransactionRepository {
       final transactions = await _localDatasource.getAllTransactions();
       return Right(transactions);
     } catch (e) {
-      return Left(LocalDataBaseFailure(message: 'Failed to fetch transactions: $e'));
+      return Left(
+        LocalDataBaseFailure(message: 'Failed to fetch transactions: $e'),
+      );
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> deleteTransaction(String transactionId) async {
+    try {
+      await _localDatasource.deleteTransaction(transactionId);
+      return const Right(null);
+    } catch (e) {
+      return Left(
+        LocalDataBaseFailure(message: "Failed to delete transaction"),
+      );
     }
   }
 }

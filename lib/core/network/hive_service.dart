@@ -9,6 +9,10 @@ class HiveService {
     await Hive.close();
     await Hive.initFlutter();
 
+    // await Hive.deleteBoxFromDisk(
+    //   HiveTableConstant.transactionBox,
+    // ); // to delete hive data
+
     try {
       if (!Hive.isAdapterRegistered(0)) {
         Hive.registerAdapter(UserHiveModelAdapter());
@@ -59,5 +63,27 @@ class HiveService {
 
     await box.flush();
     return box.values.toList();
+  }
+
+  // For delete
+  Future<Box<TransactionHiveModel>> getTransactionBox() async {
+    return await Hive.openBox<TransactionHiveModel>(
+      HiveTableConstant.transactionBox,
+    );
+  }
+
+  Future<void> deleteTransactionById(String transactionId) async {
+    final box = await Hive.openBox<TransactionHiveModel>(
+      HiveTableConstant.transactionBox,
+    );
+
+    final keyToDelete = box.keys.firstWhere(
+      (key) => box.get(key)?.id == transactionId,
+      orElse: () => null,
+    );
+
+    if (keyToDelete != null) {
+      await box.delete(keyToDelete);
+    }
   }
 }
