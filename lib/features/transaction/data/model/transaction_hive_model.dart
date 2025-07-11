@@ -71,6 +71,7 @@ class TransactionHiveModel extends Equatable {
 
   @override
   List<Object?> get props => [
+    id,
     type,
     date,
     amount,
