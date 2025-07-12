@@ -4,7 +4,7 @@ import 'package:budgethero/features/transaction/domain/entity/transaction_entity
 import 'package:budgethero/features/transaction/domain/repository/transaction_repository.dart';
 import 'package:dartz/dartz.dart';
 
-class TransactionRemoteRepository implements TransactionRepository {
+class TransactionRemoteRepository implements ITransactionRepository {
   final TransactionRemoteDatasource _remoteDatasource;
 
   TransactionRemoteRepository({

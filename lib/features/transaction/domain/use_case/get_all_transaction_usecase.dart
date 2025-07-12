@@ -6,9 +6,9 @@ import 'package:dartz/dartz.dart';
 
 class GetAllTransactionsUsecase
     implements UseCaseWithoutParams<List<TransactionEntity>> {
-  final TransactionRepository _repository;
+  final ITransactionRepository _repository;
 
-  GetAllTransactionsUsecase({required TransactionRepository repository})
+  GetAllTransactionsUsecase({required ITransactionRepository repository})
     : _repository = repository;
 
   @override

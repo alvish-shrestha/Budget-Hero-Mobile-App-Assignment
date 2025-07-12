@@ -4,7 +4,7 @@ import 'package:budgethero/features/transaction/domain/entity/transaction_entity
 import 'package:budgethero/features/transaction/domain/repository/transaction_repository.dart';
 import 'package:dartz/dartz.dart';
 
-class TransactionLocalRepository implements TransactionRepository {
+class TransactionLocalRepository implements ITransactionRepository {
   final TransactionLocalDatasource _localDatasource;
 
   TransactionLocalRepository({

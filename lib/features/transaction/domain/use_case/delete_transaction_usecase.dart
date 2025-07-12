@@ -4,9 +4,9 @@ import 'package:budgethero/features/transaction/domain/repository/transaction_re
 import 'package:dartz/dartz.dart';
 
 class DeleteTransactionUsecase implements UseCaseWithParams<void, String> {
-  final TransactionRepository _repository;
+  final ITransactionRepository _repository;
 
-  DeleteTransactionUsecase({required TransactionRepository repository})
+  DeleteTransactionUsecase({required ITransactionRepository repository})
     : _repository = repository;
 
   @override

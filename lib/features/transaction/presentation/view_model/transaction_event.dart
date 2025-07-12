@@ -17,9 +17,8 @@ class GetAllTransactionsEvent extends TransactionEvent {}
 
 // Navigate to Add Transaction Page
 class NavigateToAddTransactionViewEvent extends TransactionEvent {
-  final BuildContext context;
 
-  NavigateToAddTransactionViewEvent({required this.context});
+  NavigateToAddTransactionViewEvent();
 }
 
 // Reset navigation flag after navigating to AddTransaction screen

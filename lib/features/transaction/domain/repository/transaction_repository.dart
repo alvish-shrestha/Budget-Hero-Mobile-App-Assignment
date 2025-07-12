@@ -3,7 +3,7 @@ import 'package:dartz/dartz.dart';
 
 import '../entity/transaction_entity.dart';
 
-abstract class TransactionRepository {
+abstract class ITransactionRepository {
   Future<Either<Failure, void>> addTransaction(TransactionEntity transaction);
   Future<Either<Failure, List<TransactionEntity>>> getAllTransactions();
   Future<Either<Failure, void>> deleteTransaction(String transactionId);

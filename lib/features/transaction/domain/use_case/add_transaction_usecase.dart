@@ -16,9 +16,9 @@ class AddTransactionParams extends Equatable {
 
 class AddTransactionUsecase
     implements UseCaseWithParams<void, AddTransactionParams> {
-  final TransactionRepository _repository;
+  final ITransactionRepository _repository;
 
-  AddTransactionUsecase({required TransactionRepository repository})
+  AddTransactionUsecase({required ITransactionRepository repository})
     : _repository = repository;
 
   @override
