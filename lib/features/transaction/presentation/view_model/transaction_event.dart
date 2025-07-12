@@ -9,10 +9,7 @@ class AddTransactionEvent extends TransactionEvent {
   final BuildContext context;
   final TransactionEntity transaction;
 
-  AddTransactionEvent({
-    required this.context, 
-    required this.transaction,
-  });
+  AddTransactionEvent({required this.context, required this.transaction});
 }
 
 // Fetch all transactions from local storage (Hive)
@@ -34,3 +31,9 @@ class DeleteTransactionEvent extends TransactionEvent {
   DeleteTransactionEvent(this.transactionId);
 }
 
+class UpdateTransactionEvent extends TransactionEvent {
+  final BuildContext context;
+  final TransactionEntity transaction;
+
+  UpdateTransactionEvent({required this.context, required this.transaction});
+}

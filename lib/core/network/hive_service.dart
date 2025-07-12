@@ -86,4 +86,24 @@ class HiveService {
       await box.delete(keyToDelete);
     }
   }
+
+  // For update
+  Future<void> updateTransaction(
+    TransactionHiveModel updatedTransaction,
+  ) async {
+    final box = await Hive.openBox<TransactionHiveModel>(
+      HiveTableConstant.transactionBox,
+    );
+
+    final keyToUpdate = box.keys.firstWhere(
+      (key) => box.get(key)?.id == updatedTransaction.id,
+      orElse: () => null,
+    );
+
+    if (keyToUpdate != null) {
+      await box.put(keyToUpdate, updatedTransaction);
+    } else {
+      throw Exception('Transaction not found for update');
+    }
+  }
 }

@@ -2,6 +2,7 @@ import 'package:budgethero/core/common/snackbar/snackbar.dart';
 import 'package:budgethero/features/transaction/domain/use_case/add_transaction_usecase.dart';
 import 'package:budgethero/features/transaction/domain/use_case/delete_transaction_usecase.dart';
 import 'package:budgethero/features/transaction/domain/use_case/get_all_transaction_usecase.dart';
+import 'package:budgethero/features/transaction/domain/use_case/update_transaction_usecase.dart';
 import 'package:budgethero/features/transaction/presentation/view_model/transaction_event.dart';
 import 'package:budgethero/features/transaction/presentation/view_model/transaction_state.dart';
 import 'package:flutter/material.dart';
@@ -11,18 +12,22 @@ class TransactionViewModel extends Bloc<TransactionEvent, TransactionState> {
   final AddTransactionUsecase _addTransactionUsecase;
   final GetAllTransactionsUsecase _getAllTransactionsUsecase;
   final DeleteTransactionUsecase _deleteTransactionUsecase;
+  final UpdateTransactionUsecase _updateTransactionUsecase;
 
   TransactionViewModel({
     required AddTransactionUsecase addTransactionUsecase,
     required GetAllTransactionsUsecase getAllTransactionsUsecase,
     required DeleteTransactionUsecase deleteTransactionUsecase,
+    required UpdateTransactionUsecase updateTransactionUsecase,
   }) : _addTransactionUsecase = addTransactionUsecase,
        _getAllTransactionsUsecase = getAllTransactionsUsecase,
        _deleteTransactionUsecase = deleteTransactionUsecase,
+       _updateTransactionUsecase = updateTransactionUsecase,
        super(const TransactionState.initial()) {
     on<AddTransactionEvent>(_onAddTransaction);
     on<GetAllTransactionsEvent>(_onGetAllTransactions);
     on<DeleteTransactionEvent>(_onDeleteTransaction);
+    on<UpdateTransactionEvent>(_onUpdateTransaction);
     on<NavigateToAddTransactionViewEvent>(_onNavigateToAddTransaction);
     on<TransactionNavigationHandled>(_onTransactionNavigationHandled);
   }
@@ -115,6 +120,37 @@ class TransactionViewModel extends Bloc<TransactionEvent, TransactionState> {
       (failure) =>
           emit(state.copyWith(isLoading: false, errorMessage: failure.message)),
       (_) => add(GetAllTransactionsEvent()),
+    );
+  }
+
+  void _onUpdateTransaction(
+    UpdateTransactionEvent event,
+    Emitter<TransactionState> emit,
+  ) async {
+    emit(state.copyWith(isLoading: true));
+
+    final result = await _updateTransactionUsecase(
+      UpdateTransactionParams(transaction: event.transaction),
+    );
+
+    result.fold(
+      (failure) {
+        emit(state.copyWith(isLoading: false, isSuccess: false));
+        showMySnackbar(
+          context: event.context,
+          content: "Failed to update transaction: ${failure.message}",
+          color: Colors.red,
+        );
+      },
+      (_) {
+        emit(state.copyWith(isLoading: false, isSuccess: true));
+        showMySnackbar(
+          context: event.context,
+          content: "Transaction updated successfully!",
+          color: Colors.green,
+        );
+        add(GetAllTransactionsEvent());
+      },
     );
   }
 }

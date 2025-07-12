@@ -55,7 +55,7 @@ class TransactionLocalRepository implements TransactionRepository {
       await _localDatasource.updateTransaction(transaction);
       return const Right(null);
     } catch (e) {
-      return Left(ApiFailure(message: "Failed to update transaction"));
+      return Left(LocalDataBaseFailure(message: "Failed to update transaction"));
     }
   }
 }

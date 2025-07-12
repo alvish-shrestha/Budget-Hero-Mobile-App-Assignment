@@ -5,6 +5,8 @@ import 'package:budgethero/features/transaction/domain/entity/transaction_entity
 abstract class ITransactionLocalDatasource {
   Future<void> addTransaction(TransactionEntity transaction);
   Future<List<TransactionEntity>> getAllTransactions();
+  Future<void> deleteTransaction(String transactionId);
+  Future<void> updateTransaction(TransactionEntity transaction);
 }
 
 class TransactionLocalDatasource implements ITransactionLocalDatasource {
@@ -33,11 +35,18 @@ class TransactionLocalDatasource implements ITransactionLocalDatasource {
     }
   }
 
+  @override
   Future<void> deleteTransaction(String transactionId) async {
     await _hiveService.deleteTransactionById(transactionId);
   }
 
+  @override
   Future<void> updateTransaction(TransactionEntity transaction) async {
-    // TODO
+    try {
+      final model = TransactionHiveModel.fromEntity(transaction);
+      await _hiveService.updateTransaction(model);
+    } catch (e) {
+      throw Exception('Failed to update transaction: $e');
+    }
   }
 }

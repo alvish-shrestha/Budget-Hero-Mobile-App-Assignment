@@ -19,6 +19,7 @@ import 'package:budgethero/features/transaction/data/repository/local_repository
 import 'package:budgethero/features/transaction/domain/use_case/delete_transaction_usecase.dart';
 import 'package:budgethero/features/transaction/domain/use_case/get_all_transaction_usecase.dart';
 import 'package:budgethero/features/transaction/domain/use_case/add_transaction_usecase.dart';
+import 'package:budgethero/features/transaction/domain/use_case/update_transaction_usecase.dart';
 import 'package:budgethero/features/transaction/presentation/view_model/transaction_view_model.dart';
 
 import 'package:get_it/get_it.dart';
@@ -125,10 +126,17 @@ Future<void> _initTransactionModule() async {
   );
 
   serviceLocator.registerFactory(
+    () => UpdateTransactionUsecase(
+      repository: serviceLocator<TransactionLocalRepository>(),
+    ),
+  );
+
+  serviceLocator.registerFactory(
     () => TransactionViewModel(
       addTransactionUsecase: serviceLocator<AddTransactionUsecase>(),
       getAllTransactionsUsecase: serviceLocator<GetAllTransactionsUsecase>(),
       deleteTransactionUsecase: serviceLocator<DeleteTransactionUsecase>(),
+      updateTransactionUsecase: serviceLocator<UpdateTransactionUsecase>(),
     ),
   );
 }
@@ -141,6 +149,7 @@ Future<void> _initDashboardModule() async {
       loginViewModel: serviceLocator<LoginViewModel>(),
       getAllTransactionsUsecase: serviceLocator<GetAllTransactionsUsecase>(),
       deleteTransactionUsecase: serviceLocator<DeleteTransactionUsecase>(),
+      updateTransactionUsecase: serviceLocator<UpdateTransactionUsecase>(),
     ),
   );
 }
