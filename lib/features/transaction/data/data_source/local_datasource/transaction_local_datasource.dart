@@ -36,4 +36,8 @@ class TransactionLocalDatasource implements ITransactionLocalDatasource {
   Future<void> deleteTransaction(String transactionId) async {
     await _hiveService.deleteTransactionById(transactionId);
   }
+
+  Future<void> updateTransaction(TransactionEntity transaction) async {
+    // TODO
+  }
 }

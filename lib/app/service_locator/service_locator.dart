@@ -1,5 +1,6 @@
 import 'package:budgethero/core/network/api_service.dart';
 import 'package:budgethero/core/network/hive_service.dart';
+import 'package:budgethero/core/network/secure_storage.dart';
 
 import 'package:budgethero/features/auth/data/data_source/local_datasource/user_local_datasource.dart';
 import 'package:budgethero/features/auth/data/data_source/remote_datasource/user_remote_datasource.dart';
@@ -41,7 +42,10 @@ Future<void> _initHiveService() async {
 }
 
 Future<void> _initApiService() async {
-  serviceLocator.registerLazySingleton(() => ApiService(Dio()));
+  serviceLocator.registerLazySingleton(
+    () =>
+        ApiService(Dio(), getToken: () async => await SecureStorage.getToken()),
+  );
 }
 
 // -----------------------------------------------------------------------------
@@ -136,7 +140,7 @@ Future<void> _initDashboardModule() async {
     () => DashboardViewModel(
       loginViewModel: serviceLocator<LoginViewModel>(),
       getAllTransactionsUsecase: serviceLocator<GetAllTransactionsUsecase>(),
-      deleteTransactionUsecase: serviceLocator<DeleteTransactionUsecase>()
+      deleteTransactionUsecase: serviceLocator<DeleteTransactionUsecase>(),
     ),
   );
 }

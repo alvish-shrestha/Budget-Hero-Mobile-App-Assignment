@@ -48,4 +48,14 @@ class TransactionLocalRepository implements TransactionRepository {
       );
     }
   }
+  
+  @override
+  Future<Either<Failure, void>> updateTransaction(TransactionEntity transaction) async {
+    try {
+      await _localDatasource.updateTransaction(transaction);
+      return const Right(null);
+    } catch (e) {
+      return Left(ApiFailure(message: "Failed to update transaction"));
+    }
+  }
 }
