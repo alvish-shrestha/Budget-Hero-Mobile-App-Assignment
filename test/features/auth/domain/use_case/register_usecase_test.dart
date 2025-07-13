@@ -30,30 +30,31 @@ void main() {
     confirmPassword: 'password123',
   );
 
-  test('should return signup success when registration is successful', () async {
-    // Arrange
-    when(() => repoMock.registerUser(userEntity))
-        .thenAnswer((_) async => const Right(null));
+  group('UserRegisterUsecase', () {
+    test(
+      'should return signup success when registration is successful',
+      () async {
+        when(
+          () => repoMock.registerUser(userEntity),
+        ).thenAnswer((_) async => const Right(null));
 
-    // Act
-    final result = await usecase(registerParams);
+        final result = await usecase(registerParams);
 
-    // Assert
-    expect(result, const Right(null));
-    verify(() => repoMock.registerUser(userEntity)).called(1);
-  });
+        expect(result, const Right(null));
+        verify(() => repoMock.registerUser(userEntity)).called(1);
+      },
+    );
 
-  test('should return Failure when registration fails', () async {
-    // Arrange
-    final failure = ApiFailure(message: "Email already exists");
-    when(() => repoMock.registerUser(userEntity))
-        .thenAnswer((_) async => Left(failure));
+    test('should return Failure when registration fails', () async {
+      final failure = ApiFailure(message: "Email already exists");
+      when(
+        () => repoMock.registerUser(userEntity),
+      ).thenAnswer((_) async => Left(failure));
 
-    // Act
-    final result = await usecase(registerParams);
+      final result = await usecase(registerParams);
 
-    // Assert
-    expect(result, Left(failure));
-    verify(() => repoMock.registerUser(userEntity)).called(1);
+      expect(result, Left(failure));
+      verify(() => repoMock.registerUser(userEntity)).called(1);
+    });
   });
 }

@@ -15,36 +15,38 @@ void main() {
     usecase = UserLoginUsecase(userRepository: repoMock);
   });
 
-  test("should return success when login is successful", () async {
-    const params = LoginUsecaseParams(
-      email: "test@example.com",
-      password: "password",
-    );
-    const userId = "user_abc123";
-    when(
-      () => repoMock.loginUser(params.email, params.password),
-    ).thenAnswer((_) async => const Right(userId));
+  group('UserLoginUsecase', () {
+    test("should return success when login is successful", () async {
+      const params = LoginUsecaseParams(
+        email: "test@example.com",
+        password: "password",
+      );
+      const userId = "user_abc123";
+      when(
+        () => repoMock.loginUser(params.email, params.password),
+      ).thenAnswer((_) async => const Right(userId));
 
-    final result = await usecase(params);
+      final result = await usecase(params);
 
-    expect(result, const Right(userId));
-    verify(() => repoMock.loginUser(params.email, params.password)).called(1);
-  });
+      expect(result, const Right(userId));
+      verify(() => repoMock.loginUser(params.email, params.password)).called(1);
+    });
 
-  test("should return Failure when login fails", () async {
-    const params = LoginUsecaseParams(
-      email: "wrong@example.com",
-      password: "wrongpassword",
-    );
-    final failure = ApiFailure(message: "Invalid credentials");
+    test("should return Failure when login fails", () async {
+      const params = LoginUsecaseParams(
+        email: "wrong@example.com",
+        password: "wrongpassword",
+      );
+      final failure = ApiFailure(message: "Invalid credentials");
 
-    when(
-      () => repoMock.loginUser(params.email, params.password),
-    ).thenAnswer((_) async => Left(failure));
+      when(
+        () => repoMock.loginUser(params.email, params.password),
+      ).thenAnswer((_) async => Left(failure));
 
-    final result = await usecase(params);
+      final result = await usecase(params);
 
-    expect(result, Left(failure));
-    verify(() => repoMock.loginUser(params.email, params.password)).called(1);
+      expect(result, Left(failure));
+      verify(() => repoMock.loginUser(params.email, params.password)).called(1);
+    });
   });
 }

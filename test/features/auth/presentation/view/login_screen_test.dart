@@ -16,7 +16,6 @@ void main() {
     testWidgets('shows error if email is empty', (WidgetTester tester) async {
       await tester.pumpWidget(MaterialApp(home: Scaffold(body: LoginScreen())));
 
-      // Tap login without entering anything
       await tester.tap(find.text('SIGN IN'));
       await tester.pump();
 
