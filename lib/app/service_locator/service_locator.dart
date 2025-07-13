@@ -15,6 +15,7 @@ import 'package:budgethero/features/home/presentation/view_model/dashboard_view_
 import 'package:budgethero/features/splash_screen/presentation/view_model/splash_screen_view_model.dart';
 
 import 'package:budgethero/features/transaction/data/data_source/local_datasource/transaction_local_datasource.dart';
+import 'package:budgethero/features/transaction/data/data_source/remote_datasource/transaction_remote_datasource.dart';
 import 'package:budgethero/features/transaction/data/repository/local_repository/transaction_local_repository.dart';
 import 'package:budgethero/features/transaction/domain/use_case/delete_transaction_usecase.dart';
 import 'package:budgethero/features/transaction/domain/use_case/get_all_transaction_usecase.dart';
@@ -102,10 +103,20 @@ Future<void> _initTransactionModule() async {
   );
 
   serviceLocator.registerFactory(
+    () => TransactionRemoteDatasource(apiService: serviceLocator<ApiService>()),
+  );
+
+  serviceLocator.registerFactory(
     () => TransactionLocalRepository(
       localDatasource: serviceLocator<TransactionLocalDatasource>(),
     ),
   );
+
+  // serviceLocator.registerFactory<ITransactionRepository>(
+  //   () => TransactionRemoteRepository(
+  //     remoteDatasource: serviceLocator<TransactionRemoteDatasource>(),
+  //   ),
+  // );
 
   serviceLocator.registerFactory(
     () => GetAllTransactionsUsecase(
@@ -130,6 +141,30 @@ Future<void> _initTransactionModule() async {
       repository: serviceLocator<TransactionLocalRepository>(),
     ),
   );
+
+  // serviceLocator.registerFactory(
+  //   () => GetAllTransactionsUsecase(
+  //     repository: serviceLocator<TransactionRemoteRepository>(),
+  //   ),
+  // );
+
+  // serviceLocator.registerFactory(
+  //   () => AddTransactionUsecase(
+  //     repository: serviceLocator<TransactionRemoteRepository>(),
+  //   ),
+  // );
+
+  // serviceLocator.registerFactory(
+  //   () => DeleteTransactionUsecase(
+  //     repository: serviceLocator<TransactionRemoteRepository>(),
+  //   ),
+  // );
+
+  // serviceLocator.registerFactory(
+  //   () => UpdateTransactionUsecase(
+  //     repository: serviceLocator<TransactionRemoteRepository>(),
+  //   ),
+  // );
 
   serviceLocator.registerFactory(
     () => TransactionViewModel(
