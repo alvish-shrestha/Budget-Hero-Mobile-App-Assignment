@@ -2,6 +2,7 @@ import 'package:budgethero/core/common/snackbar/snackbar.dart';
 import 'package:budgethero/features/home/presentation/view_model/dashboard_event.dart';
 import 'package:budgethero/features/home/presentation/view_model/dashboard_state.dart';
 import 'package:budgethero/features/home/presentation/view_model/dashboard_view_model.dart';
+import 'package:budgethero/features/transaction/domain/entity/transaction_entity.dart';
 import 'package:budgethero/features/transaction/presentation/view/transaction_view.dart';
 import 'package:budgethero/features/transaction/presentation/view_model/transaction_view_model.dart';
 import 'package:flutter/material.dart';
@@ -117,17 +118,7 @@ class DashboardScreen extends StatelessWidget {
 
       grouped
           .putIfAbsent(formattedDate, () => [])
-          .add(
-            _TransactionItem(
-              id: tx.id,
-              date: tx.date,
-              category: tx.category,
-              title: tx.note,
-              amount: 'Rs ${tx.amount.toStringAsFixed(2)}',
-              isExpense: tx.type == 'expense',
-              account: tx.account,
-            ),
-          );
+          .add(_TransactionItem(transaction: tx));
     }
 
     return SingleChildScrollView(
@@ -210,7 +201,7 @@ class DashboardScreen extends StatelessWidget {
               },
               onDismissed: (_) {
                 context.read<DashboardViewModel>().add(
-                  DeleteTransactionEvent(item.id),
+                  DeleteTransactionEvent(item.transaction.id),
                 );
                 showMySnackbar(
                   context: context,
@@ -345,23 +336,9 @@ class _SummaryTile extends StatelessWidget {
 }
 
 class _TransactionItem extends StatelessWidget {
-  final String id;
-  final String date;
-  final String category;
-  final String title;
-  final String amount;
-  final String account;
-  final bool isExpense;
+  final TransactionEntity transaction;
 
-  const _TransactionItem({
-    required this.id,
-    required this.date,
-    required this.category,
-    required this.title,
-    required this.amount,
-    required this.isExpense,
-    required this.account,
-  });
+  const _TransactionItem({required this.transaction});
 
   @override
   Widget build(BuildContext context) {
@@ -386,33 +363,58 @@ class _TransactionItem extends StatelessWidget {
       }
     }
 
-    final color = isExpense ? Colors.red : Colors.blue;
+    final color = transaction.type == 'expense' ? Colors.red : Colors.blue;
 
-    return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-      padding: const EdgeInsets.all(12),
-      decoration: BoxDecoration(
-        border: Border.all(color: Colors.black12),
-        borderRadius: BorderRadius.circular(8),
-      ),
-      child: Row(
-        children: [
-          Icon(getIcon(category), color: color, size: 30),
-          const SizedBox(width: 12),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(title, style: TextStyle(color: color, fontSize: 16)),
-                Text(
-                  account,
-                  style: const TextStyle(fontSize: 12, color: Colors.black54),
+    return GestureDetector(
+      onTap: () {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder:
+                (_) => BlocProvider.value(
+                  value: context.read<TransactionViewModel>(),
+                  child: TransactionView(transactionToEdit: transaction),
                 ),
-              ],
-            ),
           ),
-          Text(amount, style: TextStyle(color: color)),
-        ],
+        ).then((_) {
+          // ignore: use_build_context_synchronously
+          context.read<DashboardViewModel>().add(
+            LoadSelectedMonthTransactionsEvent(),
+          );
+        });
+      },
+      child: Container(
+        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          border: Border.all(color: Colors.black12),
+          borderRadius: BorderRadius.circular(8),
+        ),
+        child: Row(
+          children: [
+            Icon(getIcon(transaction.category), color: color, size: 30),
+            const SizedBox(width: 12),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    transaction.note,
+                    style: TextStyle(color: color, fontSize: 16),
+                  ),
+                  Text(
+                    transaction.account,
+                    style: const TextStyle(fontSize: 12, color: Colors.black54),
+                  ),
+                ],
+              ),
+            ),
+            Text(
+              'Rs ${transaction.amount.toStringAsFixed(2)}',
+              style: TextStyle(color: color),
+            ),
+          ],
+        ),
       ),
     );
   }

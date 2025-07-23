@@ -9,7 +9,19 @@ import 'package:intl/intl.dart';
 import 'package:uuid/uuid.dart';
 
 class TransactionView extends StatelessWidget {
-  TransactionView({super.key});
+  final TransactionEntity? transactionToEdit;
+
+  TransactionView({super.key, this.transactionToEdit}) {
+    if (transactionToEdit != null) {
+      _amount.text = transactionToEdit!.amount.toString();
+      _note.text = transactionToEdit!.note;
+      _description.text = transactionToEdit!.description;
+      selectedType.value = transactionToEdit!.type;
+      selectedCategory.value = transactionToEdit!.category;
+      selectedAccount.value = transactionToEdit!.account;
+      selectedDate.value = transactionToEdit!.date;
+    }
+  }
 
   final _formKey = GlobalKey<FormState>();
 
@@ -39,7 +51,11 @@ class TransactionView extends StatelessWidget {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
-      appBar: AppBar(title: const Text('Add Transaction')),
+      appBar: AppBar(
+        title: Text(
+          transactionToEdit == null ? 'Add Transaction' : 'Update Transaction',
+        ),
+      ),
       body: BlocConsumer<TransactionViewModel, TransactionState>(
         listener: (context, state) {
           if (state.errorMessage != null) {
@@ -220,7 +236,7 @@ class TransactionView extends StatelessWidget {
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               final transaction = TransactionEntity(
-                                id: uuid.v4(),
+                                id: transactionToEdit?.id ?? uuid.v4(),
                                 type: selectedType.value,
                                 date: selectedDate.value,
                                 amount: double.parse(_amount.text),
@@ -230,14 +246,21 @@ class TransactionView extends StatelessWidget {
                                 description: _description.text,
                               );
 
-                              context.read<TransactionViewModel>().add(
-                                AddTransactionEvent(
-                                  context: context,
-                                  transaction: transaction,
-                                ),
-                              );
+                              final event =
+                                  transactionToEdit == null
+                                      ? AddTransactionEvent(
+                                        context: context,
+                                        transaction: transaction,
+                                      )
+                                      : UpdateTransactionEvent(
+                                        context: context,
+                                        transaction: transaction,
+                                      );
+
+                              context.read<TransactionViewModel>().add(event);
                             }
                           },
+
                           style: ElevatedButton.styleFrom(
                             backgroundColor:
                                 type == 'income'
@@ -249,7 +272,11 @@ class TransactionView extends StatelessWidget {
                                   ? const CircularProgressIndicator(
                                     color: Color(0xFFF55345),
                                   )
-                                  : const Text('Save Transaction'),
+                                  : Text(
+                                    transactionToEdit == null
+                                        ? 'Save Transaction'
+                                        : 'Update Transaction',
+                                  ),
                         );
                       },
                     ),

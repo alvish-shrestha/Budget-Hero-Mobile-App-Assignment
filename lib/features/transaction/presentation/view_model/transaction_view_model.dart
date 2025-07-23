@@ -149,6 +149,11 @@ class TransactionViewModel extends Bloc<TransactionEvent, TransactionState> {
           content: "Transaction updated successfully!",
           color: Colors.green,
         );
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (event.context.mounted) {
+            Navigator.pop(event.context);
+          }
+        });
         add(GetAllTransactionsEvent());
       },
     );
