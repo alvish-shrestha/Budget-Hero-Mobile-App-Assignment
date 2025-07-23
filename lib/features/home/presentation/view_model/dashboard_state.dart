@@ -1,3 +1,7 @@
+import 'package:budgethero/features/goals/presentation/view/goal_screen.dart';
+import 'package:budgethero/features/home/presentation/view/dashboard_screen.dart';
+import 'package:budgethero/features/more/presentation/view/more_screen.dart';
+import 'package:budgethero/features/stats/presentation/view/stats_screen.dart';
 import 'package:budgethero/features/transaction/domain/entity/transaction_entity.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
@@ -23,10 +27,10 @@ class DashboardState extends Equatable {
     return DashboardState(
       selectedIndex: 0,
       screens: const [
-        Center(child: Text('Transactions', style: TextStyle(fontSize: 24, fontFamily: 'Jaro'))),
-        Center(child: Text('Statistics', style: TextStyle(fontSize: 24, fontFamily: 'Jaro'))),
-        Center(child: Text('Accounts', style: TextStyle(fontSize: 24, fontFamily: 'Jaro'))),
-        Center(child: Text('More Options', style: TextStyle(fontSize: 24, fontFamily: 'Jaro'))),
+        DashboardScreen(),
+        StatsScreen(),
+        GoalScreen(),
+        MoreScreen(),
       ],
       transactions: const [],
       isLoading: false,
@@ -55,11 +59,11 @@ class DashboardState extends Equatable {
 
   @override
   List<Object?> get props => [
-        selectedIndex,
-        screens,
-        transactions,
-        isLoading,
-        selectedMonth,
-        errorMessage,
-      ];
+    selectedIndex,
+    screens,
+    transactions,
+    isLoading,
+    selectedMonth,
+    errorMessage,
+  ];
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-class MoreScreen extends StatelessWidget {
-  const MoreScreen({super.key});
+class GoalScreen extends StatelessWidget {
+  const GoalScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -9,7 +9,7 @@ class MoreScreen extends StatelessWidget {
       backgroundColor: Colors.white,
       body: Center(
         child: Text(
-          'More Coming Soon!',
+          'Goals Coming Soon!',
           style: TextStyle(
             fontSize: 24,
             fontFamily: 'Jaro',

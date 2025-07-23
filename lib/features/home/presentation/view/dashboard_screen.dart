@@ -2,6 +2,7 @@ import 'package:budgethero/core/common/snackbar/snackbar.dart';
 import 'package:budgethero/features/home/presentation/view_model/dashboard_event.dart';
 import 'package:budgethero/features/home/presentation/view_model/dashboard_state.dart';
 import 'package:budgethero/features/home/presentation/view_model/dashboard_view_model.dart';
+import 'package:budgethero/features/navigation/widget/bottom_nav_bar.dart';
 import 'package:budgethero/features/transaction/domain/entity/transaction_entity.dart';
 import 'package:budgethero/features/transaction/presentation/view/transaction_view.dart';
 import 'package:budgethero/features/transaction/presentation/view_model/transaction_view_model.dart';
@@ -63,37 +64,8 @@ class DashboardScreen extends StatelessWidget {
           ),
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
-          bottomNavigationBar: BottomAppBar(
-            shape: const CircularNotchedRectangle(),
-            notchMargin: 8.0,
-            child: SizedBox(
-              height: 60,
-              child: Row(
-                mainAxisAlignment: MainAxisAlignment.spaceAround,
-                children: List.generate(state.screens.length, (index) {
-                  final icons = [
-                    Icons.receipt_long,
-                    Icons.bar_chart,
-                    Icons.account_balance_wallet,
-                    Icons.more_horiz,
-                  ];
-                  return IconButton(
-                    icon: Icon(
-                      icons[index],
-                      color:
-                          state.selectedIndex == index
-                              ? primaryRed
-                              : Colors.black54,
-                    ),
-                    onPressed: () {
-                      context.read<DashboardViewModel>().add(
-                        ChangeTabEvent(index),
-                      );
-                    },
-                  );
-                }),
-              ),
-            ),
+          bottomNavigationBar: const MainBottomNavBar(
+            activeColor: DashboardScreen.primaryRed,
           ),
         );
       },
