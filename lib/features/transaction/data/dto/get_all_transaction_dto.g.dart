@@ -10,7 +10,7 @@ GetAllTransactionDto _$GetAllTransactionDtoFromJson(
         Map<String, dynamic> json) =>
     GetAllTransactionDto(
       success: json['success'] as bool,
-      count: (json['count'] as num).toInt(),
+      count: (json['count'] as num?)?.toInt(),
       data: (json['data'] as List<dynamic>)
           .map((e) => TransactionApiModel.fromJson(e as Map<String, dynamic>))
           .toList(),

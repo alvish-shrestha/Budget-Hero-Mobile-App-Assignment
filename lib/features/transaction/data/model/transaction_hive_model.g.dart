@@ -25,13 +25,14 @@ class TransactionHiveModelAdapter extends TypeAdapter<TransactionHiveModel> {
       account: fields[4] as String,
       note: fields[5] as String,
       description: fields[6] as String,
+      isSynced: fields[8] as bool?,
     );
   }
 
   @override
   void write(BinaryWriter writer, TransactionHiveModel obj) {
     writer
-      ..writeByte(8)
+      ..writeByte(9)
       ..writeByte(0)
       ..write(obj.type)
       ..writeByte(1)
@@ -47,7 +48,9 @@ class TransactionHiveModelAdapter extends TypeAdapter<TransactionHiveModel> {
       ..writeByte(6)
       ..write(obj.description)
       ..writeByte(7)
-      ..write(obj.id);
+      ..write(obj.id)
+      ..writeByte(8)
+      ..write(obj.isSynced);
   }
 
   @override

@@ -17,6 +17,9 @@ import 'package:budgethero/features/splash_screen/presentation/view_model/splash
 import 'package:budgethero/features/transaction/data/data_source/local_datasource/transaction_local_datasource.dart';
 import 'package:budgethero/features/transaction/data/data_source/remote_datasource/transaction_remote_datasource.dart';
 import 'package:budgethero/features/transaction/data/repository/local_repository/transaction_local_repository.dart';
+import 'package:budgethero/features/transaction/data/repository/remote_repository/transaction_remote_repository.dart';
+import 'package:budgethero/features/transaction/data/sync/sync_service.dart';
+import 'package:budgethero/features/transaction/domain/repository/transaction_repository.dart';
 import 'package:budgethero/features/transaction/domain/use_case/delete_transaction_usecase.dart';
 import 'package:budgethero/features/transaction/domain/use_case/get_all_transaction_usecase.dart';
 import 'package:budgethero/features/transaction/domain/use_case/add_transaction_usecase.dart';
@@ -35,6 +38,7 @@ Future<void> initDependencies() async {
   await _initTransactionModule();
   await _initDashboardModule();
   await _initSplashModule();
+  await _initSyncModule();
 }
 
 Future<void> _initHiveService() async {
@@ -45,8 +49,10 @@ Future<void> _initHiveService() async {
 
 Future<void> _initApiService() async {
   serviceLocator.registerLazySingleton(
-    () =>
-        ApiService(Dio(), getToken: () async => await SecureStorage.getToken()),
+    () => ApiService(
+      Dio(), 
+      getToken: () async => await SecureStorage.getToken(),
+    ),
   );
 }
 
@@ -112,33 +118,33 @@ Future<void> _initTransactionModule() async {
     ),
   );
 
-  // serviceLocator.registerFactory<ITransactionRepository>(
-  //   () => TransactionRemoteRepository(
-  //     remoteDatasource: serviceLocator<TransactionRemoteDatasource>(),
-  //   ),
-  // );
+  serviceLocator.registerFactory<ITransactionRepository>(
+    () => TransactionRemoteRepository(
+      remoteDatasource: serviceLocator<TransactionRemoteDatasource>(),
+    ),
+  );
 
   serviceLocator.registerFactory(
     () => GetAllTransactionsUsecase(
-      repository: serviceLocator<TransactionLocalRepository>(),
+      repository: serviceLocator<ITransactionRepository>(),
     ),
   );
 
   serviceLocator.registerFactory(
     () => AddTransactionUsecase(
-      repository: serviceLocator<TransactionLocalRepository>(),
+      repository: serviceLocator<ITransactionRepository>(),
     ),
   );
 
   serviceLocator.registerFactory(
     () => DeleteTransactionUsecase(
-      repository: serviceLocator<TransactionLocalRepository>(),
+      repository: serviceLocator<ITransactionRepository>(),
     ),
   );
 
   serviceLocator.registerFactory(
     () => UpdateTransactionUsecase(
-      repository: serviceLocator<TransactionLocalRepository>(),
+      repository: serviceLocator<ITransactionRepository>(),
     ),
   );
 
@@ -193,4 +199,15 @@ Future<void> _initDashboardModule() async {
 // SPLASH MODULE
 Future<void> _initSplashModule() async {
   serviceLocator.registerFactory(() => SplashScreenViewModel());
+}
+
+// -----------------------------------------------------------------------------
+// Sync Module
+Future<void> _initSyncModule() async {
+  serviceLocator.registerSingleton<SyncService>(
+    SyncService(
+      hiveService: serviceLocator<HiveService>(),
+      remoteDatasource: serviceLocator<TransactionRemoteDatasource>(),
+    ),
+  );
 }

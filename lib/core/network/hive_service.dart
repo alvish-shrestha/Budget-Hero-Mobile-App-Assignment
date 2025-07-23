@@ -106,4 +106,42 @@ class HiveService {
       throw Exception('Transaction not found for update');
     }
   }
+
+  // ==================== Sync hive and api =====================
+  Future<List<TransactionHiveModel>> getUnsyncedTransactions() async {
+    final box = await Hive.openBox<TransactionHiveModel>(
+      HiveTableConstant.transactionBox,
+    );
+
+    return box.values.where((tx) => tx.isSynced == false).toList();
+  }
+
+  Future<void> markTransactionAsSynced(String transactionId) async {
+    final box = await Hive.openBox<TransactionHiveModel>(
+      HiveTableConstant.transactionBox,
+    );
+
+    final key = box.keys.firstWhere(
+      (key) => box.get(key)?.id == transactionId,
+      orElse: () => null,
+    );
+
+    if (key != null) {
+      final existing = box.get(key);
+      if (existing != null) {
+        final updated = TransactionHiveModel(
+          id: existing.id,
+          type: existing.type,
+          date: existing.date,
+          amount: existing.amount,
+          category: existing.category,
+          account: existing.account,
+          note: existing.note,
+          description: existing.description,
+          isSynced: true,
+        );
+        await box.put(key, updated);
+      }
+    }
+  }
 }

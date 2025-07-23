@@ -6,7 +6,7 @@ part 'get_all_transaction_dto.g.dart';
 @JsonSerializable()
 class GetAllTransactionDto {
   final bool success;
-  final int count;
+  final int? count;
   final List<TransactionApiModel> data;
 
   const GetAllTransactionDto({

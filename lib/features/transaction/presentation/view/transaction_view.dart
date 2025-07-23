@@ -42,13 +42,6 @@ class TransactionView extends StatelessWidget {
       appBar: AppBar(title: const Text('Add Transaction')),
       body: BlocConsumer<TransactionViewModel, TransactionState>(
         listener: (context, state) {
-          if (state.isSuccess) {
-            WidgetsBinding.instance.addPostFrameCallback((_) {
-              if (!context.mounted) return;
-              // Navigator.pop(context);
-            });
-          }
-
           if (state.errorMessage != null) {
             WidgetsBinding.instance.addPostFrameCallback((_) {
               if (!context.mounted) return;

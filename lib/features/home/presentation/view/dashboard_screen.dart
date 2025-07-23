@@ -1,10 +1,11 @@
 import 'package:budgethero/core/common/snackbar/snackbar.dart';
+import 'package:budgethero/features/home/presentation/view_model/dashboard_event.dart';
 import 'package:budgethero/features/home/presentation/view_model/dashboard_state.dart';
 import 'package:budgethero/features/home/presentation/view_model/dashboard_view_model.dart';
 import 'package:budgethero/features/transaction/presentation/view/transaction_view.dart';
+import 'package:budgethero/features/transaction/presentation/view_model/transaction_view_model.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:budgethero/features/transaction/presentation/view_model/transaction_view_model.dart';
 import 'package:intl/intl.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -15,7 +16,9 @@ class DashboardScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      context.read<DashboardViewModel>().loadTransactionsForSelectedMonth();
+      context.read<DashboardViewModel>().add(
+        LoadSelectedMonthTransactionsEvent(),
+      );
     });
 
     return BlocBuilder<DashboardViewModel, DashboardState>(
@@ -34,8 +37,11 @@ class DashboardScreen extends StatelessWidget {
         double total = income - expense;
 
         return Scaffold(
+          backgroundColor: Colors.white,
           body: _buildDashboardContent(context, state, income, expense, total),
           floatingActionButton: FloatingActionButton(
+            backgroundColor: primaryRed,
+            child: const Icon(Icons.add),
             onPressed: () {
               Navigator.push(
                 context,
@@ -46,18 +52,14 @@ class DashboardScreen extends StatelessWidget {
                         child: TransactionView(),
                       ),
                 ),
-              ).then(
-                (_) =>
-                    // ignore: use_build_context_synchronously
-                    context
-                        .read<DashboardViewModel>()
-                        .loadTransactionsForSelectedMonth(),
-              );
+              ).then((_) {
+                // ignore: use_build_context_synchronously
+                context.read<DashboardViewModel>().add(
+                  LoadSelectedMonthTransactionsEvent(),
+                );
+              });
             },
-            backgroundColor: primaryRed,
-            child: const Icon(Icons.add),
           ),
-          backgroundColor: Colors.white,
           floatingActionButtonLocation:
               FloatingActionButtonLocation.centerDocked,
           bottomNavigationBar: BottomAppBar(
@@ -82,10 +84,11 @@ class DashboardScreen extends StatelessWidget {
                               ? primaryRed
                               : Colors.black54,
                     ),
-                    onPressed:
-                        () => context.read<DashboardViewModel>().onItemTapped(
-                          index,
-                        ),
+                    onPressed: () {
+                      context.read<DashboardViewModel>().add(
+                        ChangeTabEvent(index),
+                      );
+                    },
                   );
                 }),
               ),
@@ -107,135 +110,113 @@ class DashboardScreen extends StatelessWidget {
       return state.screens[state.selectedIndex];
     }
 
-    final groupedTransactions = <String, List<_TransactionItem>>{};
+    final grouped = <String, List<_TransactionItem>>{};
     for (var tx in state.transactions) {
-      final item = _TransactionItem(
-        id: tx.id,
-        date: tx.date,
-        category: tx.category,
-        title: tx.note,
-        amount: 'Rs ${tx.amount.toStringAsFixed(2)}',
-        isExpense: tx.type == 'expense',
-        account: tx.account,
-      );
-      groupedTransactions.putIfAbsent(tx.date, () => []).add(item);
+      final txDate = DateTime.parse(tx.date);
+      final formattedDate = DateFormat('yyyy-MM-dd').format(txDate);
+
+      grouped
+          .putIfAbsent(formattedDate, () => [])
+          .add(
+            _TransactionItem(
+              id: tx.id,
+              date: tx.date,
+              category: tx.category,
+              title: tx.note,
+              amount: 'Rs ${tx.amount.toStringAsFixed(2)}',
+              isExpense: tx.type == 'expense',
+              account: tx.account,
+            ),
+          );
     }
 
     return SingleChildScrollView(
       child: Column(
-        crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          _buildHeader(
-            context,
-            income,
-            expense,
-            total,
-            context.read<DashboardViewModel>().state.selectedMonth,
-          ),
+          _buildHeader(context, income, expense, total, state.selectedMonth),
           const SizedBox(height: 12),
           if (state.isLoading)
             const Center(child: CircularProgressIndicator())
           else if (state.transactions.isEmpty)
-            const Center(child: Text('No transactions yet'))
+            const Center(child: Text("No transactions yet"))
           else
-            ...groupedTransactions.entries.map((entry) {
-              final date = entry.key;
-              final items = entry.value;
-              return Padding(
-                padding: const EdgeInsets.symmetric(vertical: 6),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Text(
-                        date,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.black87,
+            ...grouped.entries.map(
+              (entry) =>
+                  _buildTransactionGroup(context, entry.key, entry.value),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildTransactionGroup(
+    BuildContext context,
+    String date,
+    List<_TransactionItem> items,
+  ) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(horizontal: 16),
+            child: Text(
+              date,
+              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+            ),
+          ),
+          ...items.map(
+            (item) => Dismissible(
+              key: UniqueKey(),
+              direction: DismissDirection.endToStart,
+              background: Container(
+                color: Colors.red,
+                padding: const EdgeInsets.symmetric(horizontal: 20),
+                alignment: Alignment.centerRight,
+                child: const Icon(Icons.delete, color: Colors.white),
+              ),
+              confirmDismiss: (_) async {
+                return await showDialog<bool>(
+                  context: context,
+                  builder:
+                      (_) => AlertDialog(
+                        title: const Text(
+                          'Do you want to delete?',
+                          style: TextStyle(color: Colors.red),
                         ),
-                      ),
-                    ),
-                    const SizedBox(height: 4),
-                    ...items.map(
-                      (txItem) => Builder(
-                        builder:
-                            (context) => Dismissible(
-                              key: UniqueKey(),
-                              direction: DismissDirection.endToStart,
-                              background: Container(
-                                color: primaryRed,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 20,
-                                ),
-                                alignment: Alignment.centerRight,
-                                child: const Icon(
-                                  Icons.delete,
-                                  color: Colors.white,
-                                ),
-                              ),
-                              confirmDismiss: (direction) async {
-                                return await showDialog(
-                                  context: context,
-                                  builder:
-                                      (_) => AlertDialog(
-                                        title: const Text(
-                                          'Do you want to delete?',
-                                          style: TextStyle(color: primaryRed),
-                                        ),
-                                        content: const Text(
-                                          'Are you sure you want to delete this transaction?',
-                                        ),
-                                        actions: [
-                                          TextButton(
-                                            onPressed:
-                                                () => Navigator.of(
-                                                  context,
-                                                ).pop(false),
-                                            child: const Text('Cancel'),
-                                          ),
-                                          TextButton(
-                                            onPressed:
-                                                () => Navigator.of(
-                                                  context,
-                                                ).pop(true),
-                                            child: const Text(
-                                              'Delete',
-                                              style: TextStyle(
-                                                color: primaryRed,
-                                              ),
-                                            ),
-                                          ),
-                                        ],
-                                      ),
-                                );
-                              },
-                              onDismissed: (_) async {
-                                await context
-                                    .read<DashboardViewModel>()
-                                    .deleteTransactionAndRefresh(txItem.id);
-
-                                if (context.mounted) {
-                                  Future.delayed(Duration.zero, () {
-                                    showMySnackbar(
-                                      // ignore: use_build_context_synchronously
-                                      context: context,
-                                      content: "Transaction deleted",
-                                      color: Colors.green,
-                                    );
-                                  });
-                                }
-                              },
-
-                              child: txItem,
+                        content: const Text(
+                          'Are you sure you want to delete this transaction?',
+                        ),
+                        actions: [
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, false),
+                            child: const Text('Cancel'),
+                          ),
+                          TextButton(
+                            onPressed: () => Navigator.pop(context, true),
+                            child: const Text(
+                              'Delete',
+                              style: TextStyle(color: Colors.red),
                             ),
+                          ),
+                        ],
                       ),
-                    ),
-                  ],
-                ),
-              );
-            }),
+                );
+              },
+              onDismissed: (_) {
+                context.read<DashboardViewModel>().add(
+                  DeleteTransactionEvent(item.id),
+                );
+                showMySnackbar(
+                  context: context,
+                  content: "Transaction deleted",
+                  color: Colors.green,
+                );
+              },
+              child: item,
+            ),
+          ),
         ],
       ),
     );
@@ -274,7 +255,9 @@ class DashboardScreen extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.arrow_left, color: Colors.white),
                 onPressed: () {
-                  context.read<DashboardViewModel>().previousMonth();
+                  context.read<DashboardViewModel>().add(
+                    GoToPreviousMonthEvent(),
+                  );
                 },
               ),
               const SizedBox(width: 8),
@@ -286,7 +269,7 @@ class DashboardScreen extends StatelessWidget {
               IconButton(
                 icon: const Icon(Icons.arrow_right, color: Colors.white),
                 onPressed: () {
-                  context.read<DashboardViewModel>().nextMonth();
+                  context.read<DashboardViewModel>().add(GoToNextMonthEvent());
                 },
               ),
             ],
@@ -348,8 +331,8 @@ class _SummaryTile extends StatelessWidget {
           value,
           style: TextStyle(
             fontSize: 16,
-            color: color,
             fontWeight: FontWeight.bold,
+            color: color,
           ),
         ),
       ],
@@ -378,7 +361,7 @@ class _TransactionItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    IconData getCategoryIcon(String category) {
+    IconData getIcon(String category) {
       switch (category.toLowerCase()) {
         case 'food':
           return Icons.fastfood;
@@ -399,7 +382,7 @@ class _TransactionItem extends StatelessWidget {
       }
     }
 
-    final iconColor = isExpense ? Colors.red : Colors.blue;
+    final color = isExpense ? Colors.red : Colors.blue;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -410,13 +393,13 @@ class _TransactionItem extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(getCategoryIcon(category), color: iconColor, size: 30),
+          Icon(getIcon(category), color: color, size: 30),
           const SizedBox(width: 12),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title, style: TextStyle(color: iconColor, fontSize: 16)),
+                Text(title, style: TextStyle(color: color, fontSize: 16)),
                 Text(
                   account,
                   style: const TextStyle(fontSize: 12, color: Colors.black54),
@@ -424,10 +407,7 @@ class _TransactionItem extends StatelessWidget {
               ],
             ),
           ),
-          Text(
-            isExpense ? ' $amount' : amount,
-            style: TextStyle(color: iconColor),
-          ),
+          Text(amount, style: TextStyle(color: color)),
         ],
       ),
     );

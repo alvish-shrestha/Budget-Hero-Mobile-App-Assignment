@@ -8,9 +8,13 @@ part 'transaction_api_model.g.dart';
 class TransactionApiModel extends Equatable {
   @JsonKey(name: "_id")
   final String id;
+
   final String type;
   final String date;
+
+  @JsonKey(fromJson: _amountFromJson, toJson: _amountToJson)
   final double amount;
+
   final String category;
   final String account;
   final String note;
@@ -27,14 +31,11 @@ class TransactionApiModel extends Equatable {
     required this.description,
   });
 
-  /// From JSON
   factory TransactionApiModel.fromJson(Map<String, dynamic> json) =>
       _$TransactionApiModelFromJson(json);
 
-  /// To JSON
   Map<String, dynamic> toJson() => _$TransactionApiModelToJson(this);
 
-  /// From Domain Entity
   factory TransactionApiModel.fromEntity(TransactionEntity entity) {
     return TransactionApiModel(
       id: entity.id,
@@ -48,7 +49,6 @@ class TransactionApiModel extends Equatable {
     );
   }
 
-  /// To Domain Entity
   TransactionEntity toEntity() {
     return TransactionEntity(
       id: id,
@@ -64,13 +64,23 @@ class TransactionApiModel extends Equatable {
 
   @override
   List<Object?> get props => [
-    id,
-    type,
-    date,
-    amount,
-    category,
-    account,
-    note,
-    description,
-  ];
+        id,
+        type,
+        date,
+        amount,
+        category,
+        account,
+        note,
+        description,
+      ];
 }
+
+double _amountFromJson(dynamic value) {
+  if (value == null) return 0.0;
+  if (value is int) return value.toDouble();
+  if (value is double) return value;
+  if (value is String) return double.tryParse(value) ?? 0.0;
+  return 0.0;
+}
+
+num _amountToJson(double value) => value;

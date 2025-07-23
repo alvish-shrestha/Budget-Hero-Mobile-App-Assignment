@@ -28,14 +28,14 @@ class TransactionState extends Equatable {
     bool? isSuccess,
     List<TransactionEntity>? transactions,
     String? errorMessage,
-    bool? navigateToAdd, // <-- Add this
+    bool? navigateToAdd,
   }) {
     return TransactionState(
       isLoading: isLoading ?? this.isLoading,
       isSuccess: isSuccess ?? this.isSuccess,
       transactions: transactions ?? this.transactions,
       errorMessage: errorMessage ?? this.errorMessage,
-      navigateToAdd: navigateToAdd ?? this.navigateToAdd, // <-- Copy flag
+      navigateToAdd: navigateToAdd ?? this.navigateToAdd,
     );
   }
 
@@ -45,6 +45,6 @@ class TransactionState extends Equatable {
     isSuccess,
     transactions,
     errorMessage,
-    navigateToAdd, // <-- Include in props
+    navigateToAdd,
   ];
 }

@@ -30,6 +30,9 @@ class TransactionHiveModel extends Equatable {
   @HiveField(7)
   final String id;
 
+  @HiveField(8)
+  final bool? isSynced;
+
   const TransactionHiveModel({
     required this.id,
     required this.type,
@@ -39,6 +42,7 @@ class TransactionHiveModel extends Equatable {
     required this.account,
     required this.note,
     required this.description,
+    this.isSynced = false,
   });
 
   // Convert to Entity
@@ -56,7 +60,7 @@ class TransactionHiveModel extends Equatable {
   }
 
   // Create from Entity
-  factory TransactionHiveModel.fromEntity(TransactionEntity entity) {
+  factory TransactionHiveModel.fromEntity(TransactionEntity entity, {bool isSynced = false}) {
     return TransactionHiveModel(
       id: entity.id,
       type: entity.type,
@@ -66,6 +70,7 @@ class TransactionHiveModel extends Equatable {
       account: entity.account,
       note: entity.note,
       description: entity.description,
+      isSynced: isSynced,
     );
   }
 
@@ -79,5 +84,6 @@ class TransactionHiveModel extends Equatable {
     account,
     note,
     description,
+    isSynced,
   ];
 }

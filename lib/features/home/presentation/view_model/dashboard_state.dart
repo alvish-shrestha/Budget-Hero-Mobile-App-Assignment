@@ -23,30 +23,10 @@ class DashboardState extends Equatable {
     return DashboardState(
       selectedIndex: 0,
       screens: const [
-        Center(
-          child: Text(
-            'Transactions',
-            style: TextStyle(fontSize: 24, fontFamily: 'Jaro'),
-          ),
-        ),
-        Center(
-          child: Text(
-            'Statistics',
-            style: TextStyle(fontSize: 24, fontFamily: 'Jaro'),
-          ),
-        ),
-        Center(
-          child: Text(
-            'Accounts',
-            style: TextStyle(fontSize: 24, fontFamily: 'Jaro'),
-          ),
-        ),
-        Center(
-          child: Text(
-            'More Options',
-            style: TextStyle(fontSize: 24, fontFamily: 'Jaro'),
-          ),
-        ),
+        Center(child: Text('Transactions', style: TextStyle(fontSize: 24, fontFamily: 'Jaro'))),
+        Center(child: Text('Statistics', style: TextStyle(fontSize: 24, fontFamily: 'Jaro'))),
+        Center(child: Text('Accounts', style: TextStyle(fontSize: 24, fontFamily: 'Jaro'))),
+        Center(child: Text('More Options', style: TextStyle(fontSize: 24, fontFamily: 'Jaro'))),
       ],
       transactions: const [],
       isLoading: false,
@@ -75,11 +55,11 @@ class DashboardState extends Equatable {
 
   @override
   List<Object?> get props => [
-    selectedIndex,
-    screens,
-    transactions,
-    isLoading,
-    selectedMonth,
-    errorMessage,
-  ];
+        selectedIndex,
+        screens,
+        transactions,
+        isLoading,
+        selectedMonth,
+        errorMessage,
+      ];
 }
