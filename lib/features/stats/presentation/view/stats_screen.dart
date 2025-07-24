@@ -19,7 +19,7 @@ class StatsScreen extends StatelessWidget {
         title: const Text(
           'Transaction Stats',
           style: TextStyle(
-            color: Colors.black,
+            color: Colors.white,
             fontWeight: FontWeight.bold,
             fontSize: 20,
           ),
@@ -51,14 +51,14 @@ class StatsScreen extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
                   _StatsSectionCard(
-                    title: "📊 Expenses by Category",
+                    title: "📅 Expenses by Category",
                     child:
                         stats.categoryExpenses.isEmpty
                             ? const Text("No expense data available.")
                             : _buildPieChart(stats.categoryExpenses),
                   ),
                   _StatsSectionCard(
-                    title: "📈 Monthly Income vs Expense",
+                    title: "📊 Monthly Income vs Expense",
                     child:
                         (stats.totalIncome == 0 && stats.totalExpense == 0)
                             ? const Text("No transaction data available.")
@@ -68,7 +68,7 @@ class StatsScreen extends StatelessWidget {
                             ),
                   ),
                   _StatsSectionCard(
-                    title: "📅 Expense Trend Over Time",
+                    title: "📈 Expense Trend Over Time",
                     child:
                         stats.expenseTrend.isEmpty
                             ? const Text(
@@ -271,7 +271,7 @@ Widget _buildLineChart(List<TrendPoint> trendData) {
         ),
         rightTitles: AxisTitles(
           sideTitles: SideTitles(
-            showTitles: false ,
+            showTitles: false,
             getTitlesWidget:
                 (value, meta) => Text(
                   "${value.toInt()}",

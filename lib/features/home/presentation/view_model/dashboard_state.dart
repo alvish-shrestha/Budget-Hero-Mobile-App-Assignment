@@ -1,4 +1,4 @@
-import 'package:budgethero/features/goals/presentation/view/goal_screen.dart';
+import 'package:budgethero/features/goal/presentation/view/goal_screen.dart';
 import 'package:budgethero/features/home/presentation/view/dashboard_screen.dart';
 import 'package:budgethero/features/more/presentation/view/more_screen.dart';
 import 'package:budgethero/features/stats/presentation/view/stats_screen.dart';

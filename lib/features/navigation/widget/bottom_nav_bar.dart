@@ -24,20 +24,21 @@ class MainBottomNavBar extends StatelessWidget {
                 final icons = [
                   Icons.receipt_long,
                   Icons.bar_chart,
-                  Icons.account_balance_wallet,
+                  Icons.emoji_events,
                   Icons.more_horiz,
                 ];
                 return IconButton(
                   icon: Icon(
                     icons[index],
-                    color: state.selectedIndex == index
-                        ? activeColor
-                        : Colors.black54,
+                    color:
+                        state.selectedIndex == index
+                            ? activeColor
+                            : Colors.black54,
                   ),
                   onPressed: () {
                     context.read<DashboardViewModel>().add(
-                          ChangeTabEvent(index),
-                        );
+                      ChangeTabEvent(index),
+                    );
                   },
                 );
               }),

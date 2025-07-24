@@ -10,6 +10,15 @@ import 'package:budgethero/features/auth/domain/use_case/login_usecase.dart';
 import 'package:budgethero/features/auth/domain/use_case/register_usecase.dart';
 import 'package:budgethero/features/auth/presentation/view_model/login_view_model/login_view_model.dart';
 import 'package:budgethero/features/auth/presentation/view_model/register_view_model/register_view_model.dart';
+import 'package:budgethero/features/goal/data/data_source/remote_datasource/goal_remote_datasource.dart';
+import 'package:budgethero/features/goal/data/repository/remote_repository/goal_remote_repository.dart';
+import 'package:budgethero/features/goal/domain/repository/goal_repository.dart';
+import 'package:budgethero/features/goal/domain/use_case/add_goal_usecase.dart';
+import 'package:budgethero/features/goal/domain/use_case/contribute_to_goal_usecase.dart';
+import 'package:budgethero/features/goal/domain/use_case/delete_goal_usecase.dart';
+import 'package:budgethero/features/goal/domain/use_case/get_all_goals_usecase.dart';
+import 'package:budgethero/features/goal/domain/use_case/update_goal_usecase.dart';
+import 'package:budgethero/features/goal/presentation/view_model/goal_view_model.dart';
 
 import 'package:budgethero/features/home/presentation/view_model/dashboard_view_model.dart';
 import 'package:budgethero/features/splash_screen/presentation/view_model/splash_screen_view_model.dart';
@@ -45,6 +54,7 @@ Future<void> initDependencies() async {
   await _initSplashModule();
   await _initSyncModule();
   await _initStatsModule();
+  await _initGoalsModule();
 }
 
 Future<void> _initHiveService() async {
@@ -60,8 +70,7 @@ Future<void> _initApiService() async {
   );
 }
 
-// -----------------------------------------------------------------------------
-// AUTH MODULE
+// ========================= Auth Module =======================================
 Future<void> _initAuthModule() async {
   serviceLocator.registerFactory(
     () => UserLocalDatasource(hiveService: serviceLocator<HiveService>()),
@@ -104,8 +113,7 @@ Future<void> _initAuthModule() async {
   );
 }
 
-// -----------------------------------------------------------------------------
-// TRANSACTION MODULE
+// ======================= Transaction Module ==================================
 Future<void> _initTransactionModule() async {
   serviceLocator.registerFactory(
     () =>
@@ -186,8 +194,7 @@ Future<void> _initTransactionModule() async {
   );
 }
 
-// -----------------------------------------------------------------------------
-// DASHBOARD MODULE
+// ======================= Dashboard Module ====================================
 Future<void> _initDashboardModule() async {
   serviceLocator.registerFactory(
     () => DashboardViewModel(
@@ -199,14 +206,13 @@ Future<void> _initDashboardModule() async {
   );
 }
 
-// -----------------------------------------------------------------------------
-// SPLASH MODULE
+// ======================== Splash Module ======================================
+
 Future<void> _initSplashModule() async {
   serviceLocator.registerFactory(() => SplashScreenViewModel());
 }
 
-// -----------------------------------------------------------------------------
-// Sync Module
+// ========================= Sync Module =======================================
 Future<void> _initSyncModule() async {
   serviceLocator.registerSingleton<SyncService>(
     SyncService(
@@ -225,7 +231,9 @@ Future<void> _initStatsModule() async {
 
   // Remote Repository
   serviceLocator.registerFactory<IStatsRepository>(
-    () => StatsRemoteRepository(remoteDatasource: serviceLocator<IStatsRemoteDatasource>()),
+    () => StatsRemoteRepository(
+      remoteDatasource: serviceLocator<IStatsRemoteDatasource>(),
+    ),
   );
 
   // Use Case
@@ -239,3 +247,50 @@ Future<void> _initStatsModule() async {
   );
 }
 
+// ============================= Goal Module ===================================
+Future<void> _initGoalsModule() async {
+  // Remote Data Source
+  serviceLocator.registerFactory<IGoalRemoteDatasource>(
+    () => GoalRemoteDatasource(apiService: serviceLocator<ApiService>()),
+  );
+
+  // Remote Repository
+  serviceLocator.registerFactory<IGoalRepository>(
+    () => GoalRemoteRepository(
+      remoteDatasource: serviceLocator<IGoalRemoteDatasource>(),
+    ),
+  );
+
+  // Use Cases
+  serviceLocator.registerFactory(
+    () => GetAllGoalsUsecase(repository: serviceLocator<IGoalRepository>()),
+  );
+
+  serviceLocator.registerFactory(
+    () => AddGoalUsecase(repository: serviceLocator<IGoalRepository>()),
+  );
+
+  serviceLocator.registerFactory(
+    () => UpdateGoalUsecase(repository: serviceLocator<IGoalRepository>()),
+  );
+
+  serviceLocator.registerFactory(
+    () => DeleteGoalUsecase(repository: serviceLocator<IGoalRepository>()),
+  );
+
+  serviceLocator.registerFactory(
+    () =>
+        ContributeToGoalUsecase(repository: serviceLocator<IGoalRepository>()),
+  );
+
+  // ViewModel
+  serviceLocator.registerFactory(
+    () => GoalViewModel(
+      getAllGoals: serviceLocator<GetAllGoalsUsecase>(),
+      addGoal: serviceLocator<AddGoalUsecase>(),
+      updateGoal: serviceLocator<UpdateGoalUsecase>(),
+      deleteGoal: serviceLocator<DeleteGoalUsecase>(),
+      contributeGoal: serviceLocator<ContributeToGoalUsecase>(),
+    ),
+  );
+}
