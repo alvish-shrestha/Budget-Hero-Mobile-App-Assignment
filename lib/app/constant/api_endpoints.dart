@@ -21,4 +21,5 @@ class ApiEndpoints {
   static const String getTransaction = "transaction/get";
   static const String deleteTransaction = "transaction/delete";
   static const String updateTransaction = "transaction/update";
+  static const String getStats = "stats";
 }

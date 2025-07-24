@@ -13,6 +13,11 @@ import 'package:budgethero/features/auth/presentation/view_model/register_view_m
 
 import 'package:budgethero/features/home/presentation/view_model/dashboard_view_model.dart';
 import 'package:budgethero/features/splash_screen/presentation/view_model/splash_screen_view_model.dart';
+import 'package:budgethero/features/stats/data/data_source/remote_datasource/stats_remote_datasource.dart';
+import 'package:budgethero/features/stats/data/repository/remote_repository/stats_remote_repository.dart';
+import 'package:budgethero/features/stats/domain/repository/stats_repository.dart';
+import 'package:budgethero/features/stats/domain/use_case/get_stats_usecase.dart';
+import 'package:budgethero/features/stats/presentation/view_model/stats_view_model.dart';
 
 import 'package:budgethero/features/transaction/data/data_source/local_datasource/transaction_local_datasource.dart';
 import 'package:budgethero/features/transaction/data/data_source/remote_datasource/transaction_remote_datasource.dart';
@@ -39,6 +44,7 @@ Future<void> initDependencies() async {
   await _initDashboardModule();
   await _initSplashModule();
   await _initSyncModule();
+  await _initStatsModule();
 }
 
 Future<void> _initHiveService() async {
@@ -49,10 +55,8 @@ Future<void> _initHiveService() async {
 
 Future<void> _initApiService() async {
   serviceLocator.registerLazySingleton(
-    () => ApiService(
-      Dio(), 
-      getToken: () async => await SecureStorage.getToken(),
-    ),
+    () =>
+        ApiService(Dio(), getToken: () async => await SecureStorage.getToken()),
   );
 }
 
@@ -211,3 +215,27 @@ Future<void> _initSyncModule() async {
     ),
   );
 }
+
+// ======================= Stats Module ========================================
+Future<void> _initStatsModule() async {
+  // Remote Data Source
+  serviceLocator.registerFactory<IStatsRemoteDatasource>(
+    () => StatsRemoteDatasource(apiService: serviceLocator<ApiService>()),
+  );
+
+  // Remote Repository
+  serviceLocator.registerFactory<IStatsRepository>(
+    () => StatsRemoteRepository(remoteDatasource: serviceLocator<IStatsRemoteDatasource>()),
+  );
+
+  // Use Case
+  serviceLocator.registerFactory(
+    () => GetStatsUsecase(repository: serviceLocator<IStatsRepository>()),
+  );
+
+  // ViewModel
+  serviceLocator.registerFactory(
+    () => StatsViewModel(getStatsUsecase: serviceLocator<GetStatsUsecase>()),
+  );
+}
+
