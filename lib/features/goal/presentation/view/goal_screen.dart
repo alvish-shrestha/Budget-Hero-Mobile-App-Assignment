@@ -66,7 +66,9 @@ class GoalScreen extends StatelessWidget {
     }
 
     if (state.goals.isEmpty) {
-      return const Center(child: Text('No goals found.'));
+      return const Center(
+        child: Text("No goals found.", style: TextStyle(color: Colors.black)),
+      );
     }
 
     return ListView.builder(

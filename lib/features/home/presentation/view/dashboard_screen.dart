@@ -90,7 +90,7 @@ class DashboardScreen extends StatelessWidget {
 
       grouped
           .putIfAbsent(formattedDate, () => [])
-          .add(_TransactionItem(transaction: tx));
+          .insert(0, _TransactionItem(transaction: tx));
     }
 
     return SingleChildScrollView(

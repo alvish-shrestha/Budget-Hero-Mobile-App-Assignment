@@ -17,7 +17,7 @@ class StatsScreen extends StatelessWidget {
       appBar: AppBar(
         elevation: 0.5,
         title: const Text(
-          'Transaction Stats',
+          "Transaction Stats",
           style: TextStyle(
             color: Colors.white,
             fontWeight: FontWeight.bold,
