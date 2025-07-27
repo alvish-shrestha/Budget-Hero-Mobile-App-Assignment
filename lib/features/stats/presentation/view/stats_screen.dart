@@ -42,7 +42,12 @@ class StatsScreen extends StatelessWidget {
 
             final stats = state.stats;
             if (stats == null) {
-              return const Center(child: Text('No data available.'));
+              return const Center(
+                child: Text(
+                  "No data available.",
+                  style: TextStyle(color: Colors.black),
+                ),
+              );
             }
 
             return SingleChildScrollView(
@@ -54,14 +59,20 @@ class StatsScreen extends StatelessWidget {
                     title: "📅 Expenses by Category",
                     child:
                         stats.categoryExpenses.isEmpty
-                            ? const Text("No expense data available.")
+                            ? const Text(
+                              "No expense data available.",
+                              style: TextStyle(color: Colors.black),
+                            )
                             : _buildPieChart(stats.categoryExpenses),
                   ),
                   _StatsSectionCard(
                     title: "📊 Monthly Income vs Expense",
                     child:
                         (stats.totalIncome == 0 && stats.totalExpense == 0)
-                            ? const Text("No transaction data available.")
+                            ? const Text(
+                              "No transaction data available.",
+                              style: TextStyle(color: Colors.black),
+                            )
                             : _buildBarChart(
                               stats.totalIncome,
                               stats.totalExpense,
@@ -73,6 +84,7 @@ class StatsScreen extends StatelessWidget {
                         stats.expenseTrend.isEmpty
                             ? const Text(
                               "No expense data available for trends.",
+                              style: TextStyle(color: Colors.black),
                             )
                             : _buildLineChart(stats.expenseTrend),
                   ),
