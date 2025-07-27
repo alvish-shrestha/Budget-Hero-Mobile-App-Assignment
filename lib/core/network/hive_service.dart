@@ -144,4 +144,12 @@ class HiveService {
       }
     }
   }
+
+  Future<void> clearUser() async {
+    final userBox = await Hive.openBox<UserHiveModel>(
+      HiveTableConstant.userBox,
+    );
+    await userBox.clear();
+    debugPrint("User data cleared. Transactions retained.");
+  }
 }

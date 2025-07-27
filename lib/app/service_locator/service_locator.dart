@@ -21,6 +21,14 @@ import 'package:budgethero/features/goal/domain/use_case/update_goal_usecase.dar
 import 'package:budgethero/features/goal/presentation/view_model/goal_view_model.dart';
 
 import 'package:budgethero/features/home/presentation/view_model/dashboard_view_model.dart';
+import 'package:budgethero/features/more/data/data_source/remote_datasource/account_remote_datasource.dart';
+import 'package:budgethero/features/more/data/repository/remote_repository/account_remote_repository.dart';
+import 'package:budgethero/features/more/domain/repository/account_repository.dart';
+import 'package:budgethero/features/more/domain/use_case/logout_usecase.dart';
+import 'package:budgethero/features/more/domain/use_case/update_email_usecase.dart';
+import 'package:budgethero/features/more/domain/use_case/update_password_usecase.dart';
+import 'package:budgethero/features/more/domain/use_case/update_username_usecase.dart';
+import 'package:budgethero/features/more/presentation/view_model/account_view_model.dart';
 import 'package:budgethero/features/splash_screen/presentation/view_model/splash_screen_view_model.dart';
 import 'package:budgethero/features/stats/data/data_source/remote_datasource/stats_remote_datasource.dart';
 import 'package:budgethero/features/stats/data/repository/remote_repository/stats_remote_repository.dart';
@@ -55,6 +63,7 @@ Future<void> initDependencies() async {
   await _initSyncModule();
   await _initStatsModule();
   await _initGoalsModule();
+  await _initMoreModule();
 }
 
 Future<void> _initHiveService() async {
@@ -291,6 +300,50 @@ Future<void> _initGoalsModule() async {
       updateGoal: serviceLocator<UpdateGoalUsecase>(),
       deleteGoal: serviceLocator<DeleteGoalUsecase>(),
       contributeGoal: serviceLocator<ContributeToGoalUsecase>(),
+    ),
+  );
+}
+
+// =========================== More Module =====================================
+Future<void> _initMoreModule() async {
+  // Remote Data Source
+  serviceLocator.registerFactory<IAccountRemoteDatasource>(
+    () => AccountRemoteDatasource(apiService: serviceLocator<ApiService>()),
+  );
+
+  // Remote Repository
+  serviceLocator.registerFactory<IAccountRepository>(
+    () => AccountRemoteRepository(
+      remoteDatasource: serviceLocator<IAccountRemoteDatasource>(),
+    ),
+  );
+
+  // Use Cases
+  serviceLocator.registerFactory(
+    () =>
+        UpdateUsernameUsecase(repository: serviceLocator<IAccountRepository>()),
+  );
+
+  serviceLocator.registerFactory(
+    () => UpdateEmailUsecase(repository: serviceLocator<IAccountRepository>()),
+  );
+
+  serviceLocator.registerFactory(
+    () =>
+        UpdatePasswordUsecase(repository: serviceLocator<IAccountRepository>()),
+  );
+
+  serviceLocator.registerFactory(
+    () => LogoutUsecase(hiveService: serviceLocator<HiveService>()),
+  );
+
+  // ViewModel
+  serviceLocator.registerFactory(
+    () => AccountViewModel(
+      updateUsername: serviceLocator<UpdateUsernameUsecase>(),
+      updateEmail: serviceLocator<UpdateEmailUsecase>(),
+      updatePassword: serviceLocator<UpdatePasswordUsecase>(),
+      logout: serviceLocator<LogoutUsecase>(),
     ),
   );
 }

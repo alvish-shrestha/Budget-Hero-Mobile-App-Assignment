@@ -16,6 +16,9 @@ class ApiEndpoints {
   // Auth
   static const String login = "auth/login";
   static const String register = "auth/register";
+  static const String updateUsername = "auth/update-username";
+  static const String updateEmail = "auth/update-email";
+  static const String updatePassword = "auth/update-password";
 
   // Transaction
   static const String addTransaction = "transaction/add";

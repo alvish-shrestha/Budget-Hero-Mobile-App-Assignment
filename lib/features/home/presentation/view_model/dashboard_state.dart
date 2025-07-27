@@ -1,10 +1,13 @@
+import 'package:budgethero/app/service_locator/service_locator.dart';
 import 'package:budgethero/features/goal/presentation/view/goal_screen.dart';
 import 'package:budgethero/features/home/presentation/view/dashboard_screen.dart';
 import 'package:budgethero/features/more/presentation/view/more_screen.dart';
+import 'package:budgethero/features/more/presentation/view_model/account_view_model.dart';
 import 'package:budgethero/features/stats/presentation/view/stats_screen.dart';
 import 'package:budgethero/features/transaction/domain/entity/transaction_entity.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
 class DashboardState extends Equatable {
   final int selectedIndex;
@@ -26,11 +29,14 @@ class DashboardState extends Equatable {
   factory DashboardState.initial() {
     return DashboardState(
       selectedIndex: 0,
-      screens: const [
-        DashboardScreen(),
-        StatsScreen(),
-        GoalScreen(),
-        MoreScreen(),
+      screens: [
+        const DashboardScreen(),
+        const StatsScreen(),
+        const GoalScreen(),
+        BlocProvider<AccountViewModel>(
+          create: (_) => serviceLocator<AccountViewModel>(),
+          child: const MoreScreen(),
+        ),
       ],
       transactions: const [],
       isLoading: false,
