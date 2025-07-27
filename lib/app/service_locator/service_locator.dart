@@ -10,6 +10,11 @@ import 'package:budgethero/features/auth/domain/use_case/login_usecase.dart';
 import 'package:budgethero/features/auth/domain/use_case/register_usecase.dart';
 import 'package:budgethero/features/auth/presentation/view_model/login_view_model/login_view_model.dart';
 import 'package:budgethero/features/auth/presentation/view_model/register_view_model/register_view_model.dart';
+import 'package:budgethero/features/forgot_password/data/data_source/remote_datasource/forgot_password_remote_datasource.dart';
+import 'package:budgethero/features/forgot_password/data/repository/remote_repository/forgot_password_remote_repository.dart';
+import 'package:budgethero/features/forgot_password/domain/repository/forgot_password_repository.dart';
+import 'package:budgethero/features/forgot_password/domain/use_case/forgot_password_usecase.dart';
+import 'package:budgethero/features/forgot_password/presentation/view_model/forgot_password_view_model.dart';
 import 'package:budgethero/features/goal/data/data_source/remote_datasource/goal_remote_datasource.dart';
 import 'package:budgethero/features/goal/data/repository/remote_repository/goal_remote_repository.dart';
 import 'package:budgethero/features/goal/domain/repository/goal_repository.dart';
@@ -64,6 +69,7 @@ Future<void> initDependencies() async {
   await _initStatsModule();
   await _initGoalsModule();
   await _initMoreModule();
+  await _initForgotPasswordModule();
 }
 
 Future<void> _initHiveService() async {
@@ -344,6 +350,33 @@ Future<void> _initMoreModule() async {
       updateEmail: serviceLocator<UpdateEmailUsecase>(),
       updatePassword: serviceLocator<UpdatePasswordUsecase>(),
       logout: serviceLocator<LogoutUsecase>(),
+    ),
+  );
+}
+
+// ======================= Forgot Password Module ==============================
+Future<void> _initForgotPasswordModule() async {
+  // Remote Data Source
+  serviceLocator.registerFactory<IForgotPasswordRemoteDatasource>(
+    () => ForgotPasswordRemoteDatasource(serviceLocator<ApiService>().dio),
+  );
+
+  // Remote Repository
+  serviceLocator.registerFactory<IForgotPasswordRepository>(
+    () => ForgotPasswordRemoteRepository(
+      remoteDatasource: serviceLocator<IForgotPasswordRemoteDatasource>(),
+    ),
+  );
+
+  // Use Case
+  serviceLocator.registerFactory(
+    () => ForgotPasswordUsecase(serviceLocator<IForgotPasswordRepository>()),
+  );
+
+  // ViewModel
+  serviceLocator.registerFactory(
+    () => ForgotPasswordViewModel(
+      usecase: serviceLocator<ForgotPasswordUsecase>(),
     ),
   );
 }

@@ -3,6 +3,7 @@ import 'package:budgethero/features/auth/presentation/view/signup_screen.dart';
 import 'package:budgethero/features/auth/presentation/view_model/login_view_model/login_event.dart';
 import 'package:budgethero/features/auth/presentation/view_model/login_view_model/login_view_model.dart';
 import 'package:budgethero/features/auth/presentation/view_model/register_view_model/register_view_model.dart';
+import 'package:budgethero/features/forgot_password/presentation/view/forgot_password_dialog.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -150,12 +151,16 @@ class LoginScreen extends StatelessWidget {
                     padding: const EdgeInsets.only(right: 60, top: 8),
                     child: Align(
                       alignment: Alignment.centerRight,
-                      child: Text(
-                        "Forgot Password?",
-                        style: TextStyle(
-                          color: Colors.white,
-                          fontFamily: "Jaro",
-                          fontSize: isLandscape ? 17 : 15,
+                      child: GestureDetector(
+                        onTap: () => showForgotPasswordDialog(context),
+                        child: Text(
+                          "Forgot Password?",
+                          style: TextStyle(
+                            decoration: TextDecoration.underline,
+                            color: Colors.white,
+                            fontFamily: "Jaro",
+                            fontSize: isLandscape ? 17 : 15,
+                          ),
                         ),
                       ),
                     ),

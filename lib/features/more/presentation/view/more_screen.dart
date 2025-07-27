@@ -2,6 +2,7 @@ import 'package:budgethero/app/service_locator/service_locator.dart';
 import 'package:budgethero/core/common/snackbar/snackbar.dart';
 import 'package:budgethero/features/auth/presentation/view/login_screen.dart';
 import 'package:budgethero/features/auth/presentation/view_model/login_view_model/login_view_model.dart';
+import 'package:budgethero/features/forgot_password/presentation/view_model/forgot_password_view_model.dart';
 import 'package:budgethero/features/more/presentation/view/account/change_email_dialog.dart';
 import 'package:budgethero/features/more/presentation/view/account/change_password_dialog.dart';
 import 'package:budgethero/features/more/presentation/view/account/change_username_dialog.dart';
@@ -90,8 +91,17 @@ class MoreScreen extends StatelessWidget {
                 Navigator.of(context).pushReplacement(
                   MaterialPageRoute(
                     builder:
-                        (_) => BlocProvider.value(
-                          value: serviceLocator<LoginViewModel>(),
+                        (_) => MultiBlocProvider(
+                          providers: [
+                            BlocProvider(
+                              create: (_) => serviceLocator<LoginViewModel>(),
+                            ),
+                            BlocProvider(
+                              create:
+                                  (_) =>
+                                      serviceLocator<ForgotPasswordViewModel>(),
+                            ),
+                          ],
                           child: LoginScreen(),
                         ),
                   ),
