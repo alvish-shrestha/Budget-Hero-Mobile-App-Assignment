@@ -23,7 +23,7 @@ class LoginScreen extends StatelessWidget {
     var headingFont = isLandscape ? 50.0 : 40.0;
     var subheadingFont = isLandscape ? 22.0 : 18.0;
     var paddingTop = isLandscape ? 60.0 : 150.0;
-    const double buttonSize = 50;
+    // const double buttonSize = 50;
 
     return Scaffold(
       backgroundColor: const Color(0xFFF55345),
@@ -200,37 +200,35 @@ class LoginScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      const Expanded(
-                        child: Divider(color: Colors.white, thickness: 1),
-                      ),
-                      Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 10),
-                        child: Text(
-                          "or sign in with",
-                          style: TextStyle(
-                            fontFamily: "Jaro",
-                            fontSize: 14,
-                            color: Colors.white,
-                          ),
-                        ),
-                      ),
-                      const Expanded(
-                        child: Divider(color: Colors.white, thickness: 1),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Row(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      _socialButton('assets/images/google.png', buttonSize),
-                      const SizedBox(width: 20),
-                      _socialButton('assets/images/facebook.png', buttonSize),
-                    ],
-                  ),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     const Expanded(
+                  //       child: Divider(color: Colors.white, thickness: 1),
+                  //     ),
+                  //     Padding(
+                  //       padding: const EdgeInsets.symmetric(horizontal: 10),
+                  //       child: Text(
+                  //         "or sign in with",
+                  //         style: TextStyle(
+                  //           fontFamily: "Jaro",
+                  //           fontSize: 14,
+                  //           color: Colors.white,
+                  //         ),
+                  //       ),
+                  //     ),
+                  //     const Expanded(
+                  //       child: Divider(color: Colors.white, thickness: 1),
+                  //     ),
+                  //   ],
+                  // ),
+                  // const SizedBox(height: 20),
+                  // Row(
+                  //   mainAxisAlignment: MainAxisAlignment.center,
+                  //   children: [
+                  //     _socialButton('assets/images/google.png', buttonSize),
+                  //   ],
+                  // ),
                   const SizedBox(height: 20),
                   GestureDetector(
                     onTap: () {
@@ -273,21 +271,21 @@ class LoginScreen extends StatelessWidget {
     );
   }
 
-  Widget _socialButton(String assetPath, double size) {
-    return SizedBox(
-      width: size,
-      height: size,
-      child: ElevatedButton(
-        onPressed: () {},
-        style: ElevatedButton.styleFrom(
-          backgroundColor: Colors.white,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(25),
-          ),
-          padding: EdgeInsets.zero,
-        ),
-        child: Image.asset(assetPath, height: 28),
-      ),
-    );
-  }
+  // Widget _socialButton(String assetPath, double size) {
+  //   return SizedBox(
+  //     width: size,
+  //     height: size,
+  //     child: ElevatedButton(
+  //       onPressed: () {},
+  //       style: ElevatedButton.styleFrom(
+  //         backgroundColor: Colors.white,
+  //         shape: RoundedRectangleBorder(
+  //           borderRadius: BorderRadius.circular(25),
+  //         ),
+  //         padding: EdgeInsets.zero,
+  //       ),
+  //       child: Image.asset(assetPath, height: 28),
+  //     ),
+  //   );
+  // }
 }

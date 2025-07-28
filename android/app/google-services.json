@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "644684057981",
+    "project_id": "budget-hero-mobile",
+    "storage_bucket": "budget-hero-mobile.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:644684057981:android:800aeb04331d009fcb5014",
+        "android_client_info": {
+          "package_name": "com.alvish.myproject"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "644684057981-89b7pfdvohmc48riie5tfp9r9ggtc89i.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCLv--LsMywqcV8TRTXOsHu2X2DEoxxbes"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "644684057981-89b7pfdvohmc48riie5tfp9r9ggtc89i.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
