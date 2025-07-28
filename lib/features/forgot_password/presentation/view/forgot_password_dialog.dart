@@ -11,6 +11,9 @@ void showForgotPasswordDialog(BuildContext context) {
   final newPasswordController = TextEditingController();
   final confirmPasswordController = TextEditingController();
 
+  final ValueNotifier<bool> obscureNewPassword = ValueNotifier(true);
+  final ValueNotifier<bool> obscureConfirmPassword = ValueNotifier(true);
+
   final InputDecorationTheme customInputDecoration = InputDecorationTheme(
     labelStyle: const TextStyle(color: Colors.black),
     floatingLabelStyle: const TextStyle(color: Colors.black),
@@ -65,20 +68,52 @@ void showForgotPasswordDialog(BuildContext context) {
                           children: [
                             Text(state.message),
                             const SizedBox(height: 10),
-                            TextField(
-                              controller: newPasswordController,
-                              obscureText: true,
-                              decoration: const InputDecoration(
-                                labelText: 'New Password',
-                              ),
+                            ValueListenableBuilder<bool>(
+                              valueListenable: obscureNewPassword,
+                              builder: (_, obscure, __) {
+                                return TextField(
+                                  controller: newPasswordController,
+                                  obscureText: obscure,
+                                  decoration: InputDecoration(
+                                    labelText: 'New Password',
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        obscure
+                                            ? Icons.visibility
+                                            : Icons.visibility_off,
+                                        color: Colors.grey,
+                                      ),
+                                      onPressed: () {
+                                        obscureNewPassword.value = !obscure;
+                                      },
+                                    ),
+                                  ).applyDefaults(customInputDecoration),
+                                );
+                              },
                             ),
                             const SizedBox(height: 10),
-                            TextField(
-                              controller: confirmPasswordController,
-                              obscureText: true,
-                              decoration: const InputDecoration(
-                                labelText: 'Confirm Password',
-                              ).applyDefaults(customInputDecoration),
+                            ValueListenableBuilder<bool>(
+                              valueListenable: obscureConfirmPassword,
+                              builder: (_, obscure, __) {
+                                return TextField(
+                                  controller: confirmPasswordController,
+                                  obscureText: obscure,
+                                  decoration: InputDecoration(
+                                    labelText: 'Confirm Password',
+                                    suffixIcon: IconButton(
+                                      icon: Icon(
+                                        obscure
+                                            ? Icons.visibility
+                                            : Icons.visibility_off,
+                                        color: Colors.grey,
+                                      ),
+                                      onPressed: () {
+                                        obscureConfirmPassword.value = !obscure;
+                                      },
+                                    ),
+                                  ).applyDefaults(customInputDecoration),
+                                );
+                              },
                             ),
                           ],
                         );
@@ -99,7 +134,7 @@ void showForgotPasswordDialog(BuildContext context) {
                           ],
                         );
                       } else {
-                        // Initial & loading & failure → Email Step
+                        // Initial, loading, or failure → Email Step
                         currentStep = Column(
                           mainAxisSize: MainAxisSize.min,
                           children: [
@@ -138,7 +173,6 @@ void showForgotPasswordDialog(BuildContext context) {
                 BlocBuilder<ForgotPasswordViewModel, ForgotPasswordState>(
                   builder: (context, state) {
                     final vm = context.read<ForgotPasswordViewModel>();
-
                     final isLoading = state is ForgotPasswordLoading;
 
                     String buttonText = "Send OTP";
