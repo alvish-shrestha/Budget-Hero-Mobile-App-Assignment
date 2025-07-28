@@ -179,30 +179,6 @@ class LoginScreen extends StatelessWidget {
                               password: passwordController.text,
                             ),
                           );
-                          // final email = emailController.text.trim();
-                          // final password = passwordController.text.trim();
-
-                          // if (email == "admin@gmail.com" &&
-                          //     password == "admin123") {
-                          //   showMySnackbar(
-                          //     context: context,
-                          //     content: "Logged in Successfully",
-                          //     color: Color(0xFFF55345),
-                          //   );
-                          //   Navigator.pushAndRemoveUntil(
-                          //     context,
-                          //     MaterialPageRoute(
-                          //       builder: (context) => const DashboardScreen(),
-                          //     ),
-                          //     (route) => false,
-                          //   );
-                          // } else {
-                          //   showMySnackbar(
-                          //     context: context,
-                          //     content: "Invalid email or password",
-                          //     color: Colors.red,
-                          //   );
-                          // }
                         }
                       },
                       style: ElevatedButton.styleFrom(
