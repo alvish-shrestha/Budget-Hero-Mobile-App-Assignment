@@ -373,7 +373,7 @@ Future<void> _initForgotPasswordModule() async {
     () => ForgotPasswordUsecase(serviceLocator<IForgotPasswordRepository>()),
   );
 
-  // ViewModel
+  // ViewModel (Bloc)
   serviceLocator.registerFactory(
     () => ForgotPasswordViewModel(
       usecase: serviceLocator<ForgotPasswordUsecase>(),
