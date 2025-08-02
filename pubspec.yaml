@@ -35,6 +35,7 @@ dependencies:
   mocktail: ^1.0.4
   bloc_test: ^10.0.0
   fl_chart: ^1.0.0
+  sensors_plus: ^6.1.1
 
 dev_dependencies:
   flutter_test:

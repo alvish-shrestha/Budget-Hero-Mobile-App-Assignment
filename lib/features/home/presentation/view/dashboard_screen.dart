@@ -1,4 +1,5 @@
 import 'package:budgethero/core/common/snackbar/snackbar.dart';
+import 'package:budgethero/core/utils/shake_handler.dart';
 import 'package:budgethero/features/home/presentation/view_model/dashboard_event.dart';
 import 'package:budgethero/features/home/presentation/view_model/dashboard_state.dart';
 import 'package:budgethero/features/home/presentation/view_model/dashboard_view_model.dart';
@@ -17,6 +18,10 @@ class DashboardScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      ShakeHandler().init(context);
+    });
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       context.read<DashboardViewModel>().add(
         LoadSelectedMonthTransactionsEvent(),
@@ -172,12 +177,16 @@ class DashboardScreen extends StatelessWidget {
                 );
               },
               onDismissed: (_) {
+                final deletedTx = item.transaction;
                 context.read<DashboardViewModel>().add(
                   DeleteTransactionEvent(item.transaction.id),
                 );
+
+                ShakeHandler().setLastDeleted(deletedTx);
+
                 showMySnackbar(
                   context: context,
-                  content: "Transaction deleted",
+                  content: "Transaction deleted (shake to undo)",
                   color: Colors.green,
                 );
               },
