@@ -233,6 +233,7 @@ class TransactionView extends StatelessWidget {
                       valueListenable: selectedType,
                       builder: (context, type, _) {
                         return ElevatedButton(
+                          key: const Key('submitButton'),
                           onPressed: () {
                             if (_formKey.currentState!.validate()) {
                               final transaction = TransactionEntity(
@@ -298,6 +299,7 @@ class TransactionView extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12.0),
       child: TextFormField(
+        key: Key(label),
         controller: controller,
         keyboardType:
             label == "Amount" ? TextInputType.number : TextInputType.text,
